@@ -1,0 +1,2717 @@
+
+/***********************************************************************
+* Header File:
+ *    Bird.cpp : The representation of a position on the screen
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#include "bird.h"
+/*******************************************
+ * BIRD : Default Constractors 
+ *       Bird()
+ ******************************************/
+Bird::Bird()
+{
+	live = true;
+
+	point.setX(-200);
+	point.setY(random(-180, 180));
+	setPoint(point);
+
+	if(point.getY() > 0)
+	{
+		velocity.setDx(random(2, 5));
+		velocity.setDy(random(-5, -2));		
+	}
+	else 
+	{
+		velocity.setDx(random(2, 5));
+		velocity.setDy(random(2, 5));	
+	}
+}
+
+/*******************************************
+ * BIRD : Draw
+ *       Draw Bird on the screen
+ ******************************************/
+void Bird::draw()
+{
+	drawCircle(point, 3);
+}
+
+/*******************************************
+ * BIRD : Hit
+ * kill the standard bird and return 1
+ ******************************************/
+int Bird::hit()
+{
+	kill();
+	return 1;
+}
+
+
+
+/***********************************************************************
+ * Header File:
+ *    Bird.h : The representation of a position on the screen
+ * Author:
+ *   	Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#ifndef BIRD_H
+#define BIRD_H
+
+#include "flyingObject.h"
+/*********************************************
+ * BIRD Class
+ * Inherit FlyingObject's class
+ *********************************************/
+class Bird  : public FlyingObject 
+{
+public:
+	Bird(); 
+
+   ///// draw function /////
+ 	virtual void draw() = 0;
+
+  //// Hit function /////
+ 	virtual int hit() = 0;
+
+};
+
+#endif // POINT_H
+
+
+/***********************************************************************
+* Header File:
+ *    Bullet.cpp : The representation of a position on the screen
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+#include "bullet.h"
+#include <cmath> // used for sin, cos, and M_PI
+
+#define BULLET_SPEED 10.0
+
+/*******************************************
+ * BULLET : Draw
+ *       Draw bullet on the screen
+ ******************************************/
+void Bullet::draw()
+{
+	drawDot(point);
+}
+
+/*******************************************
+ * BULLET : isAlive
+ *       return bullet true 
+ ******************************************/
+bool Bullet::isAlive()
+{
+ 	return live;
+}
+
+/*******************************************
+ * BULLET : Fire
+ *       Fire the bird
+ ******************************************/
+void Bullet::fire(Point point, float angle)
+{
+	angle = angle - 20;
+	setPoint(point);
+	float dx = BULLET_SPEED * (cos(M_PI / 180.0 * angle));
+	float dy = BULLET_SPEED * (sin(M_PI / 180.0 * angle));
+
+	velocity.setDx(velocity.getDx()- dx);
+	velocity.setDy(velocity.getDy()+ dy);
+
+}
+
+/***********************************************************************
+ * Header File:
+ *    Bullet.h :
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#ifndef BULLET_H
+#define BULLET_H
+
+#include "flyingObject.h" 
+
+/*********************************************
+ * Bullet:
+ * Inherit from FyingObject.  
+ *********************************************/
+class Bullet : public FlyingObject
+{
+private: 
+   //float angle;
+   float bullets;
+   bool live;
+
+public:
+   Bullet()  //angle(60.0), bullets(0.0)
+    { 
+    	live = true;
+    	point.setX(200);
+    	point.setY(-200);
+    }
+
+   ///// draw function /////
+   void draw(); 
+
+   ///////// isAlive function/////
+   bool isAlive();
+
+   ///// Fire funtion//////
+   void fire(Point point, float angle); 
+
+};
+
+#endif // POINT_H
+
+/*****************************************************
+ * File: Driver.cpp
+ * Author: Br. Burton
+ *
+ * Description: This file contains the main function
+ *  that starts the game and the callback function
+ *  that specifies what methods of the game class are
+ *  called each time through the game loop.
+ ******************************************************/
+#include "game.h"
+#include "uiInteract.h"
+
+/*************************************
+ * All the interesting work happens here, when
+ * I get called back from OpenGL to draw a frame.
+ * When I am finished drawing, then the graphics
+ * engine will wait until the proper amount of
+ * time has passed and put the drawing on the screen.
+ **************************************/
+void callBack(const Interface *pUI, void *p)
+{
+   Game *pGame = (Game *)p;
+   
+   pGame->advance();
+   pGame->handleInput(*pUI);
+   pGame->draw(*pUI);
+}
+
+
+/*********************************
+ * Main is pretty sparse.  Just initialize
+ * the game and call the display engine.
+ * That is all!
+ *********************************/
+int main(int argc, char ** argv)
+{
+   Point topLeft(-200, 200);
+   Point bottomRight(200, -200);
+   
+   Interface ui(argc, argv, "Skeet", topLeft, bottomRight);
+   Game game(topLeft, bottomRight);
+   ui.run(callBack, &game);
+   
+   return 0;
+}
+
+
+/***********************************************************************
+* Header File:
+ *    Flying.cpp : The representation of a position on the screen
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+#include "flyingObject.h"
+
+/*******************************************
+ * FLYING : SET point
+ * Set the point 
+ *******************************************/
+void FlyingObject::setPoint(Point point)          
+{
+   this->point = point;      
+}
+
+/*******************************************
+ * FLYING : SET velocity
+ * Set the velocity  
+ *******************************************/
+void FlyingObject::setVelocity(Velocity velocity) 
+{
+   this->velocity = velocity;
+}
+
+/*******************************************
+ * Kill : 
+ * Set the velocity  
+ *******************************************/
+void FlyingObject::kill() 
+{	
+	this->live = false;
+}
+
+/*****************************************
+   ////Advance function ///////
+**************************************/
+void FlyingObject::advance()
+{
+	point.addX(velocity.getDx());
+	point.addY(velocity.getDy());
+}
+
+
+
+
+/***********************************************************************
+ * Header File:
+ *    Flying.h : The representation of a position on the screen
+ * Author:
+ *   	Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#ifndef FLYINGOBJECT_H
+#define FLYINGOBJECT_H
+#include "point.h"
+#include "velocity.h"
+#include "uiDraw.h"
+
+#include <iostream>
+using namespace std;
+
+/*********************************************
+ * FLYING Object
+ * Base Class.  
+ *********************************************/
+class FlyingObject
+{
+protected:
+   Point point;           
+   Velocity velocity;
+   bool live;
+
+public:
+ 	  /////////////// Constructors /////////////////
+	FlyingObject(): velocity(2.0, 2.0)
+  {
+    live = true;
+  }
+
+  	////////////////// Getters //////////////////
+ 	Point getPoint()              const { return point;  	        }
+ 	Velocity getVelocity()        const { return velocity;  	    }
+ 	
+ 
+  	 ///////////// Setters ///////////////
+ 	void setPoint(Point point);         
+ 	void setVelocity(Velocity velocity);
+  bool isAlive() { return live; } 
+
+  	///// Kill function/////
+  	void kill();  
+
+   ////Advance function ///////
+   void advance();
+
+};
+
+#endif // POINT_H
+
+
+/*************************************************************
+ * File: game.cpp
+ * Author: Br. Burton
+ *
+ * Description: Contains the implementations of the
+ *  method bodies for the game class.
+ *
+ * Please DO NOT share this code with other students from
+ *  other sections or other semesters. They may not receive
+ *  the same code that you are receiving.
+ *************************************************************/
+
+#include "game.h"
+
+#include "uiDraw.h"
+#include "uiInteract.h"
+#include "point.h"
+#include "bullet.h"
+#include "bird.h"
+#include "toughBird.h"
+#include "sacredBird.h"
+#include "standardBird.h"
+
+#include <vector>
+using namespace std;
+
+#define OFF_SCREEN_BORDER_AMOUNT 5
+
+
+/***************************************
+ * GAME CONSTRUCTOR
+ ***************************************/
+Game :: Game(Point tl, Point br)
+ : topLeft(tl), bottomRight(br), rifle(br)
+{
+   // Set up the initial conditions of the game
+   score = 0;
+
+   // TODO: Set your bird pointer to a good initial value (e.g., NULL)
+   bird = NULL;
+
+}
+
+/****************************************
+ * GAME DESTRUCTOR
+ ****************************************/
+Game :: ~Game()
+{
+   // TODO: Check to see if there is currently a bird allocated
+   //       and if so, delete it.
+   delete bird;
+   bird = NULL;
+
+}
+
+/***************************************
+ * GAME :: ADVANCE
+ * advance the game one unit of time
+ ***************************************/
+void Game :: advance()
+{
+   advanceBullets();
+   advanceBird();
+
+   handleCollisions();
+   cleanUpZombies();
+}
+
+/***************************************
+ * GAME :: ADVANCE BULLETS
+ * Go through each bullet and advance it.
+ ***************************************/
+void Game :: advanceBullets()
+{
+   // Move each of the bullets forward if it is alive
+   for (int i = 0; i < bullets.size(); i++)
+   {
+      if (bullets[i].isAlive())
+      {
+         // this bullet is alive, so tell it to move forward
+         bullets[i].advance();
+         
+         if (!isOnScreen(bullets[i].getPoint()))
+         {
+            // the bullet has left the screen
+            bullets[i].kill();
+         }
+         
+      }
+   }
+}
+
+/**************************************************************************
+ * GAME :: ADVANCE BIRD
+ *
+ * 1. If there is no bird, create one with some probability
+ * 2. If there is a bird, and it's alive, advance it
+ * 3. Check if the bird has gone of the screen, and if so, "kill" it
+ **************************************************************************/
+void Game :: advanceBird()
+{
+   if (bird == NULL)
+   {
+      // there is no bird right now, possibly create one
+      
+      // "resurrect" it will some random chance
+      if (random(0, 30) == 0)
+      {
+         // create a new bird
+         bird = createBird();
+      }
+   }
+   else
+   {
+      // we have a bird, make sure it's alive
+      if (bird->isAlive())
+      {
+         // move it forward
+         bird->advance();
+         
+         // check if the bird has gone off the screen
+         if (!isOnScreen(bird->getPoint()))
+         {
+            // We have missed the bird
+            bird->kill();
+         }
+      }
+   }
+   
+}
+
+/**************************************************************************
+ * GAME :: CREATE BIRD
+ * Create a bird of a random type according to the rules of the game.
+ **************************************************************************/
+Bird* Game :: createBird()
+{
+   Bird* newBird = NULL;
+
+   // TODO: Fill this in
+   int rand = random(1, 4);
+
+   switch(rand)
+   {
+      case 1: 
+      newBird = new ToughBird;
+      break;
+
+       case 2: 
+      newBird = new SacredBird;
+      break;
+
+       default: 
+      newBird = new StandardBird;
+      break;
+   }
+
+   return newBird;
+}
+
+/**************************************************************************
+ * GAME :: IS ON SCREEN
+ * Determines if a given point is on the screen.
+ **************************************************************************/
+bool Game :: isOnScreen(const Point & point)
+{
+   return (point.getX() >= topLeft.getX() - OFF_SCREEN_BORDER_AMOUNT
+      && point.getX() <= bottomRight.getX() + OFF_SCREEN_BORDER_AMOUNT
+      && point.getY() >= bottomRight.getY() - OFF_SCREEN_BORDER_AMOUNT
+      && point.getY() <= topLeft.getY() + OFF_SCREEN_BORDER_AMOUNT);
+}
+
+/**************************************************************************
+ * GAME :: HANDLE COLLISIONS
+ * Check for a collision between a bird and a bullet.
+ **************************************************************************/
+void Game :: handleCollisions()
+{
+   // now check for a hit (if it is close enough to any live bullets)
+   for (int i = 0; i < bullets.size(); i++)
+   {
+      if (bullets[i].isAlive())
+      {
+         // this bullet is alive, see if its too close
+
+         // check if the bird is at this point (in case it was hit)
+         if (bird != NULL && bird->isAlive())
+         {
+            // BTW, this logic could be more sophisiticated, but this will
+            // get the job done for now...
+            if (fabs(bullets[i].getPoint().getX() - bird->getPoint().getX()) < CLOSE_ENOUGH
+                && fabs(bullets[i].getPoint().getY() - bird->getPoint().getY()) < CLOSE_ENOUGH)
+            {
+               //we have a hit!
+               
+               // hit the bird
+               int points = bird->hit();
+               score += points;
+               
+               // the bullet is dead as well
+               bullets[i].kill();
+            }
+         }
+      } // if bullet is alive
+      
+   } // for bullets
+}
+
+/**************************************************************************
+ * GAME :: CLEAN UP ZOMBIES
+ * Remove any dead objects (take bullets out of the list, deallocate bird)
+ **************************************************************************/
+void Game :: cleanUpZombies()
+{
+   // check for dead bird
+   if (bird != NULL && !bird->isAlive())
+   {
+      // the bird is dead, but the memory is not freed up yet
+      
+      // TODO: Clean up the memory used by the bird
+      delete bird;
+      bird = NULL;
+   
+   }
+   
+   // Look for dead bullets
+   vector<Bullet>::iterator bulletIt = bullets.begin();
+   while (bulletIt != bullets.end())
+   {
+      Bullet bullet = *bulletIt;
+      // Asteroids Hint:
+      // If we had a list of pointers, we would need this line instead:
+      //Bullet* pBullet = *bulletIt;
+      
+      if (!bullet.isAlive())
+      {
+         // If we had a list of pointers, we would need to delete the memory here...
+         
+         
+         // remove from list and advance
+         bulletIt = bullets.erase(bulletIt);
+      }
+      else
+      {
+         bulletIt++; // advance
+      }
+   }
+   
+}
+
+/***************************************
+ * GAME :: HANDLE INPUT
+ * accept input from the user
+ ***************************************/
+void Game :: handleInput(const Interface & ui)
+{
+   // Change the direction of the rifle
+   if (ui.isLeft())
+   {
+      rifle.moveLeft();
+   }
+   
+   if (ui.isRight())
+   {
+      rifle.moveRight();
+   }
+   
+   // Check for "Spacebar
+   if (ui.isSpace())
+   {
+      Bullet newBullet;
+      newBullet.fire(rifle.getPoint(), rifle.getAngle());
+      
+      bullets.push_back(newBullet);
+   }
+}
+
+/*********************************************
+ * GAME :: DRAW
+ * Draw everything on the screen
+ *********************************************/
+void Game :: draw(const Interface & ui)
+{
+   // draw the bird
+
+   // TODO: Check if you have a valid bird and if it's alive
+   // then call it's draw method
+   
+  if(bird != NULL)
+  { 
+    bird->draw();
+
+  }
+
+   // draw the rifle
+   rifle.draw();
+   
+   // draw the bullets, if they are alive
+   for (int i = 0; i < bullets.size(); i++)
+   {
+      if (bullets[i].isAlive())
+      {
+         bullets[i].draw();
+      }
+   }
+   
+   // Put the score on the screen
+   Point scoreLocation;
+   scoreLocation.setX(topLeft.getX() + 5);
+   scoreLocation.setY(topLeft.getY() - 5);
+   
+   drawNumber(scoreLocation, score);
+
+ 
+    if (score >= 50 && score <=60)
+   { 
+     // draw text on the screen
+      drawText(Point(), "Excellent!");
+   }
+
+   if (score < 0)
+   {
+      // draw text if you kill too many sacred birds
+      drawText(Point(), "You killed too many Sacred Birds!");
+   } 
+
+}
+
+bool Game::gameIsOver(bool gameOver)
+{
+ 
+}
+
+
+/*************************************************************
+ * File: game.h
+ * Author: Br. Burton
+ *
+ * Description: The game of Skeet. This class holds each piece
+ *  of the game (birds, bullets, rifle, score). It also has
+ *  methods that make the game happen (advance, interact, etc.)
+ *
+ * Please DO NOT share this code with other students from
+ *  other sections or other semesters. They may not receive
+ *  the same code that you are receiving.
+ *************************************************************/
+
+#ifndef GAME_H
+#define GAME_H
+
+#include <vector>
+
+#include "uiDraw.h"
+#include "uiInteract.h"
+#include "point.h"
+#include "velocity.h"
+#include "rifle.h"
+
+// TODO: include your bullet and bird classes
+#include "bird.h"
+#include "bullet.h"
+#define CLOSE_ENOUGH 15
+
+/*****************************************
+ * GAME
+ * The main game class containing all the state
+ *****************************************/
+class Game
+{
+public:
+   /*********************************************
+    * Constructor
+    * Initializes the game
+    *********************************************/
+   Game(Point tl, Point br);
+   ~Game();
+   
+   /*********************************************
+    * Function: handleInput
+    * Description: Takes actions according to whatever
+    *  keys the user has pressed.
+    *********************************************/
+   void handleInput(const Interface & ui);
+   
+   /*********************************************
+    * Function: advance
+    * Description: Move everything forward one
+    *  step in time.
+    *********************************************/
+   void advance();
+   
+   /*********************************************
+    * Function: draw
+    * Description: draws everything for the game.
+    *********************************************/
+   void draw(const Interface & ui);
+   
+private:
+   // The coordinates of the screen
+   Point topLeft;
+   Point bottomRight;
+   bool gameOver;
+   
+   int score;
+   
+   Rifle rifle;
+   std::vector<Bullet> bullets;
+   
+   // TODO: declare your bird here (e.g., "Bird * bird;")
+  Bird * bird;
+
+
+   /*************************************************
+    * Private methods to help with the game logic.
+    *************************************************/
+   bool isOnScreen(const Point & point);
+   void advanceBullets();
+   void advanceBird();
+   Bird* createBird();
+   
+   void handleCollisions();
+   void cleanUpZombies();
+   bool gameIsOver(bool gameOver);
+
+};
+
+#endif /* GAME_H */
+
+
+###############################################################
+# Program:
+#     Milestone 08, Skeet
+#     Brother McCracken, CS165
+# Author:
+#     Makram Ibrahim
+# Summary:
+#    This time is just to compile the skeet project. 
+# Above and Beyond
+#     When you submit your final project (not for milestones),
+#     list anything here that you did to go above and beyond
+#     the base requirements for your project.
+###############################################################
+
+
+LFLAGS = -lglut -lGLU -lGL
+
+###############################################################
+# Build the main game
+###############################################################
+a.out: driver.o game.o uiInteract.o uiDraw.o point.o rifle.o flyingObject.o velocity.o bullet.o bird.o standardBird.o sacredBird.o toughBird.o
+	g++ driver.o game.o uiInteract.o uiDraw.o point.o rifle.o velocity.o bullet.o bird.o flyingObject.o standardBird.o sacredBird.o toughBird.o $(LFLAGS)
+
+###############################################################
+# Individual files
+#    uiDraw.o      Draw polygons on the screen and do all OpenGL graphics
+#    uiInteract.o  Handles input events
+#    point.o       The position on the screen
+#    ground.o      Handles the ground / world
+#    game.o        Handles the game interaction
+###############################################################
+uiDraw.o: uiDraw.cpp uiDraw.h point.h
+	g++ -c uiDraw.cpp
+
+uiInteract.o: uiInteract.cpp uiInteract.h
+	g++ -c uiInteract.cpp
+
+point.o: point.cpp point.h
+	g++ -c point.cpp
+
+game.o: game.cpp uiDraw.h uiInteract.h point.h rifle.h bullet.h bird.h
+	g++ -c game.cpp
+
+driver.o: game.h uiInteract.h driver.cpp
+	g++ -c driver.cpp
+
+rifle.o: rifle.h point.h uiDraw.h rifle.cpp
+	g++ -c rifle.cpp
+
+#######################################################################
+# ADD YOUR ADDITIONAL RULES HERE!
+#
+# Then, don't forget to add them to the dependecy list for a.out above.
+#######################################################################
+bird.o: bird.h bird.cpp
+	g++ -c bird.cpp
+
+bullet.o: bullet.h bullet.cpp
+	g++ -c bullet.cpp
+	
+velocity.o: velocity.h velocity.cpp
+	g++ -c velocity.cpp
+
+flyingObject.o: flyingObject.h flyingObject.cpp
+	g++ -c flyingObject.cpp
+
+standardBird.o: standardBird.h standardBird.cpp
+	g++ -c standardBird.cpp
+
+sacredBird.o: sacredBird.h sacredBird.cpp
+	g++ -c sacredBird.cpp
+	 
+toughBird.o:
+
+###############################################################
+# General rules
+###############################################################
+clean:
+	rm a.out *.o
+
+/***********************************************************************
+ * Source File:
+ *    Point : The representation of a position on the screen
+ * Author:
+ *    Br. Helfrich
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#include "point.h"
+#include <cassert>
+
+/******************************************
+ * POINT : CONSTRUCTOR WITH X,Y
+ * Initialize the point to the passed position
+ *****************************************/
+Point::Point(float x, float y) : x(0.0), y(0.0)
+{
+   setX(x);
+   setY(y);
+}
+
+/*******************************************
+ * POINT : SET X
+ * Set the x position if the value is within range
+ *******************************************/
+void Point::setX(float x)
+{
+   this->x = x;
+}
+
+/*******************************************
+ * POINT : SET Y
+ * Set the y position if the value is within range
+ *******************************************/
+void Point::setY(float y)
+{
+   this->y = y;
+} 
+
+/******************************************
+ * POINT insertion
+ *       Display coordinates on the screen
+ *****************************************/
+std::ostream & operator << (std::ostream & out, const Point & pt)
+{
+   out << "(" << pt.getX() << ", " << pt.getY() << ")";
+   return out;
+}
+
+/*******************************************
+ * POINT extraction
+ *       Prompt for coordinates
+ ******************************************/
+std::istream & operator >> (std::istream & in, Point & pt)
+{
+   float x;
+   float y;
+   in >> x >> y;
+
+   pt.setX(x);
+   pt.setY(y);
+
+   return in;
+}
+   
+
+/***********************************************************************
+ * Header File:
+ *    Point : The representation of a position on the screen
+ * Author:
+ *    Br. Helfrich
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+
+#ifndef POINT_H
+#define POINT_H
+
+#include <iostream>
+
+/*********************************************
+ * POINT
+ * A single position.  
+ *********************************************/
+class Point
+{
+public:
+   // constructors
+   Point()            : x(0.0), y(0.0)  {}
+   Point(bool check)  : x(0.0), y(0.0)  {}
+   Point(float x, float y);
+
+   // getters
+   float getX()       const { return x;              }
+   float getY()       const { return y;              }
+
+   // setters
+   void setX(float x);
+   void setY(float y);
+   void addX(float dx)      { setX(getX() + dx);     }
+   void addY(float dy)      { setY(getY() + dy);     }
+
+private:
+   float x;           // horizontal position
+   float y;           // vertical position
+};
+
+// stream I/O useful for debugging
+std::ostream & operator << (std::ostream & out, const Point & pt);
+std::istream & operator >> (std::istream & in,        Point & pt);
+
+#endif // POINT_H
+
+
+/*************************************************************
+ * File: rifle.cpp
+ * Author: Br. Burton
+ *
+ * Description: Contains the function bodies for the rifle class.
+ *
+ * Please DO NOT share this code with other students from
+ *  other sections or other semesters. They may not receive
+ *  the same code that you are receiving.
+ *************************************************************/
+
+#include "rifle.h"
+#include "point.h"
+#include "uiDraw.h"
+
+#include <cassert>
+
+void Rifle :: draw() const
+{
+   assert(angle >= ANGLE_MIN);
+   assert(angle <= ANGLE_MAX);
+   
+   drawRect(point, RIFLE_WIDTH, RIFLE_HEIGHT, 90 - angle);
+}
+
+void Rifle :: moveLeft()
+{
+   angle -= RIFLE_MOVE_AMOUNT;
+
+   if (angle < ANGLE_MIN)
+   {
+      angle = ANGLE_MIN;
+   }
+}
+
+
+void Rifle :: moveRight()
+{
+   angle += RIFLE_MOVE_AMOUNT;
+   
+   if (angle > ANGLE_MAX)
+   {
+      angle = ANGLE_MAX;
+   }
+}
+
+/*************************************************************
+ * File: rifle.h
+ * Author: Br. Burton
+ *
+ * Description: Defines a Rifle.
+ *
+ * Please DO NOT share this code with other students from
+ *  other sections or other semesters. They may not receive
+ *  the same code that you are receiving.
+ *************************************************************/
+
+#ifndef RIFLE_H
+#define RIFLE_H
+
+#include "point.h"
+
+#define RIFLE_WIDTH 5
+#define RIFLE_HEIGHT 40
+
+#define ANGLE_MAX 90
+#define ANGLE_MIN 0
+#define ANGLE_START 45
+
+#define RIFLE_MOVE_AMOUNT 3
+
+class Rifle
+{
+private:
+   Point point;
+
+   /**********************************************************
+    * angle - The angle of the rifles in degrees.
+    *  Assumes that straight right is 0 degrees and up is 90.
+    **********************************************************/
+   float angle;
+   
+   
+public:
+   Rifle(const Point & point) : point(point) { angle = ANGLE_START; }
+   
+   /****************
+    * Basic Getters
+    ****************/
+   float getAngle() const { return angle; }
+   Point getPoint() const { return point; }
+   
+   /*****************
+    * Drawing
+    *****************/
+   void draw() const;
+
+   /*****************
+    * Movement
+    *****************/
+   void moveLeft();
+   void moveRight();
+   
+};
+
+#endif
+
+
+/***********************************************************************
+* Header File:
+ *    SacredBird.cpp : The representation of a position on the screen
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#include "sacredBird.h"
+
+/*******************************************
+ * SACRED BIRD : Draw
+ *       Draw tough Bird on the screen
+ ******************************************/
+void SacredBird::draw()
+{
+	drawSacredBird(point, 12);
+
+}
+
+/*******************************************
+ * SACRED BIRD : Hit
+ * return -10 every time Sacred Bird get killed 
+ ******************************************/
+int SacredBird::hit()
+{
+	kill();
+	return -10;
+}
+
+/***********************************************************************
+ * Header File:
+ *    SacredBird.h : The representation of a position on the screen
+ * Author:
+ *   	Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#ifndef SACREDBIRD_H
+#define SACREDBIRD_H
+#include "point.h"
+#include "velocity.h"
+#include "bird.h"
+
+#include <iostream>
+
+/*********************************************
+ * BIRD
+ * A single position.  
+ *********************************************/
+class SacredBird : public Bird
+{
+
+public:	
+ ///// draw function /////
+  void draw();
+
+  int hit();
+};
+
+#endif // POINT_H
+
+
+
+/***********************************************************************
+* Header File:
+ *    StanderBird.cpp : The representation of a position on the screen
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#include "standardBird.h"
+
+/*******************************************
+ * Standard Bird:
+ *       Draw on the screen
+ ******************************************/
+void StandardBird::draw()
+{
+	drawCircle(point, 12);
+}
+
+/*******************************************
+ * BIRD : Hit
+ * Kill standard bird and return 1 every time.
+ ******************************************/
+int StandardBird::hit()
+{
+	kill();
+	return 1;
+}
+
+/***********************************************************************
+ * Header File:
+ *    StandarBird.h : The representation of a position on the screen
+ * Author:
+ *   	Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#ifndef STANDARDBIRD_H
+#define STANDARDBIRD_H
+#include "point.h"
+#include "velocity.h"
+#include "bird.h"
+
+#include <iostream>
+
+/*********************************************
+ * Standard Bird
+ * Inherit from Bird class the method.  
+ *********************************************/
+class StandardBird : public Bird
+{
+private:
+	int hits;
+
+public:
+ 	  /////////////// Constructors /////////////////
+	StandardBird(): hits(1), Bird() {} 
+
+  int getHits()  const   { return hits;       }
+  void setHits(int hits) { this->hits = hits; }
+
+ 	///// draw function /////
+  void draw();
+
+  ///////hit function/////
+  int hit();
+};
+
+#endif // POINT_H
+
+
+/***********************************************************************
+* Header File:
+ *    ToughBird.cpp : The representation of a position on the screen
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#include "toughBird.h"
+/*******************************************
+ * TOUGH BIRD : Draw
+ *       Draw Bird on the screen
+ ******************************************/
+void ToughBird::draw()
+{
+	drawToughBird(point, 12, hits); 
+
+}
+
+/*******************************************
+ * Hit BIRD : Draw
+ * kill the tough bird after 3 shots. 
+ ******************************************/
+int ToughBird::hit()
+{
+	hits--;
+
+	if (hits <= 0)
+	{
+		kill();
+	}
+
+	return 5; 
+}
+/***********************************************************************
+ * Header File:
+ *    Tough Bird.h : The representation of a position on the screen
+ * Author:
+ *   	Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#ifndef TOUGHBIRD_H
+#define TOUGHBIRD_H
+#include "point.h"
+#include "velocity.h"
+#include "bird.h"
+
+#include <iostream>
+
+/*********************************************
+ * TOUGH BIRD
+ * Inherit from Bird class.  
+ *********************************************/
+class ToughBird : public Bird
+{
+private: 
+  int hits;
+
+public:
+    /////////////// Constructors /////////////////
+  ToughBird(): hits(3), Bird() {}
+
+  int getHits()  const   { return hits;       }
+  void setHits(int hits) { this->hits = hits; }
+
+  ///// draw function /////
+  void draw();
+
+  //////hit function////
+  int hit();
+ 
+};
+
+#endif // POINT_H
+
+
+/***********************************************************************
+ * Source File:
+ *    User Interface Draw : put pixels on the screen
+ * Author:
+ *    Br. Helfrich
+ * Summary:
+ *    This is the code necessary to draw on the screen. We have a collection
+ *    of procedural functions here because each draw function does not
+ *    retain state. In other words, they are verbs (functions), not nouns
+ *    (variables) or a mixture (objects)
+ ************************************************************************/
+
+#include <string>     // need you ask?
+#include <sstream>    // convert an integer into text
+#include <cassert>    // I feel the need... the need for asserts
+#include <time.h>     // for clock
+
+
+#ifdef __APPLE__
+#include <openGL/gl.h>    // Main OpenGL library
+#include <GLUT/glut.h>    // Second OpenGL library
+#endif // __APPLE__
+
+#ifdef __linux__
+#include <GL/gl.h>        // Main OpenGL library
+#include <GL/glut.h>      // Second OpenGL library
+#endif // __linux__
+
+#ifdef _WIN32
+#include <stdio.h>
+#include <stdlib.h>
+#include <GL/glut.h>         // OpenGL library we copied 
+#define _USE_MATH_DEFINES
+#include <math.h>
+#endif // _WIN32
+
+#include "point.h"
+#include "uiDraw.h"
+
+using namespace std;
+
+#define deg2rad(value) ((M_PI / 180) * (value))
+
+/*********************************************
+ * NUMBER OUTLINES
+ * We are drawing the text for score and things
+ * like that by hand to make it look "old school."
+ * These are how we render each individual charactger.
+ * Note how -1 indicates "done".  These are paired
+ * coordinates where the even are the x and the odd
+ * are the y and every 2 pairs represents a point
+ ********************************************/
+const char NUMBER_OUTLINES[10][20] =
+{
+  {0, 0,  7, 0,   7, 0,  7,10,   7,10,  0,10,   0,10,  0, 0,  -1,-1, -1,-1},//0
+  {7, 0,  7,10,  -1,-1, -1,-1,  -1,-1, -1,-1,  -1,-1, -1,-1,  -1,-1, -1,-1},//1
+  {0, 0,  7, 0,   7, 0,  7, 5,   7, 5,  0, 5,   0, 5,  0,10,   0,10,  7,10},//2
+  {0, 0,  7, 0,   7, 0,  7,10,   7,10,  0,10,   4, 5,  7, 5,  -1,-1, -1,-1},//3
+  {0, 0,  0, 5,   0, 5,  7, 5,   7, 0,  7,10,  -1,-1, -1,-1,  -1,-1, -1,-1},//4
+  {7, 0,  0, 0,   0, 0,  0, 5,   0, 5,  7, 5,   7, 5,  7,10,   7,10,  0,10},//5
+  {7, 0,  0, 0,   0, 0,  0,10,   0,10,  7,10,   7,10,  7, 5,   7, 5,  0, 5},//6
+  {0, 0,  7, 0,   7, 0,  7,10,  -1,-1, -1,-1,  -1,-1, -1,-1,  -1,-1, -1,-1},//7
+  {0, 0,  7, 0,   0, 5,  7, 5,   0,10,  7,10,   0, 0,  0,10,   7, 0,  7,10},//8
+  {0, 0,  7, 0,   7, 0,  7,10,   0, 0,  0, 5,   0, 5,  7, 5,  -1,-1, -1,-1} //9
+};
+
+/************************************************************************
+ * DRAW DIGIT
+ * Draw a single digit in the old school line drawing style.  The
+ * size of the glyph is 8x11 or x+(0..7), y+(0..10)
+ *   INPUT  topLeft   The top left corner of the character
+ *          digit     The digit we are rendering: '0' .. '9'
+ *************************************************************************/
+void drawDigit(const Point & topLeft, char digit)
+{
+   // we better be only drawing digits
+   assert(isdigit(digit));
+   if (!isdigit(digit))
+      return;
+
+   // compute the row as specified by the digit
+   int r = digit - '0';
+   assert(r >= 0 && r <= 9);
+
+   // go through each segment.
+   for (int c = 0; c < 20 && NUMBER_OUTLINES[r][c] != -1; c += 4)
+   {
+      assert(NUMBER_OUTLINES[r][c    ] != -1 &&
+             NUMBER_OUTLINES[r][c + 1] != -1 &&
+             NUMBER_OUTLINES[r][c + 2] != -1 &&
+             NUMBER_OUTLINES[r][c + 3] != -1);
+
+      //Draw a line based off of the num structure for each number
+      Point start;
+      start.setX(topLeft.getX() + NUMBER_OUTLINES[r][c]);
+      start.setY(topLeft.getY() - NUMBER_OUTLINES[r][c + 1]);
+      Point end;
+      end.setX(topLeft.getX() + NUMBER_OUTLINES[r][c + 2]);
+      end.setY(topLeft.getY() - NUMBER_OUTLINES[r][c + 3]);
+         
+      drawLine(start, end);
+   }
+}
+
+/*************************************************************************
+ * DRAW NUMBER
+ * Display an integer on the screen using the 7-segment method
+ *   INPUT  topLeft   The top left corner of the character
+ *          digit     The digit we are rendering: '0' .. '9'
+ *************************************************************************/
+void drawNumber(const Point & topLeft, int number)
+{
+   // our cursor, if you will. It will advance as we output digits
+   Point point = topLeft;
+   
+   // is this negative
+   bool isNegative = (number < 0);
+   number *= (isNegative ? -1 : 1);
+   
+   // render the number as text
+   ostringstream sout;
+   sout << number;
+   string text = sout.str();
+
+   // handle the negative
+   if (isNegative)
+   {
+      glBegin(GL_LINES);
+      glVertex2f(point.getX() + 1, point.getY() - 5);
+      glVertex2f(point.getX() + 5, point.getY() - 5);
+      glEnd();
+      point.addX(11);
+   }
+   
+   // walk through the text one digit at a time
+   for (const char *p = text.c_str(); *p; p++)
+   {
+      assert(isdigit(*p));
+      drawDigit(point, *p);
+      point.addX(11);
+   }
+}
+
+
+/*************************************************************************
+ * DRAW TEXT
+ * Draw text using a simple bitmap font
+ *   INPUT  topLeft   The top left corner of the text
+ *          text      The text to be displayed
+ ************************************************************************/
+void drawText(const Point & topLeft, const char * text)
+{
+   void *pFont = GLUT_BITMAP_HELVETICA_12;  // also try _18
+
+   // prepare to draw the text from the top-left corner
+   glRasterPos2f(topLeft.getX(), topLeft.getY());
+
+   // loop through the text
+   for (const char *p = text; *p; p++)
+      glutBitmapCharacter(pFont, *p);
+}
+
+/************************************************************************
+ * DRAW POLYGON
+ * Draw a POLYGON from a given location (center) of a given size (radius).
+ *  INPUT   center   Center of the polygon
+ *          radius   Size of the polygon
+ *          points   How many points will we draw it.  Larger the number,
+ *                   the more line segments we will use
+ *          rotation True circles are rotation independent.  However, if you
+ *                   are drawing a 3-sided polygon (triangle), this matters!
+ *************************************************************************/
+void drawPolygon(const Point & center, int radius, int points, int rotation)
+{
+   // begin drawing
+   glBegin(GL_LINE_LOOP);
+
+   //loop around a circle the given number of times drawing a line from
+   //one point to the next
+   for (double i = 0; i < 2 * M_PI; i += (2 * M_PI) / points)
+   {
+      Point temp(false /*check*/);
+      temp.setX(center.getX() + (radius * cos(i)));
+      temp.setY(center.getY() + (radius * sin(i)));
+      rotate(temp, center, rotation);
+      glVertex2f(temp.getX(), temp.getY());
+   }
+
+   // complete drawing
+   glEnd();
+
+}
+
+
+/************************************************************************
+ * ROTATE
+ * Rotate a given point (point) around a given origin (center) by a given
+ * number of degrees (angle).
+ *    INPUT  point    The point to be moved
+ *           center   The center point we will rotate around
+ *           rotation Rotation in degrees
+ *    OUTPUT point    The new position
+ *************************************************************************/
+void rotate(Point & point, const Point & origin, int rotation)
+{
+   // because sine and cosine are expensive, we want to call them only once
+   double cosA = cos(deg2rad(rotation));
+   double sinA = sin(deg2rad(rotation));
+
+   // remember our original point
+   Point tmp(false /*check*/);
+   tmp.setX(point.getX() - origin.getX());
+   tmp.setY(point.getY() - origin.getY());
+
+   // find the new values
+   point.setX(static_cast<int> (tmp.getX() * cosA -
+                                tmp.getY() * sinA) +
+              origin.getX());
+   point.setY(static_cast<int> (tmp.getX() * sinA +
+                                tmp.getY() * cosA) +
+              origin.getY());
+}
+
+/************************************************************************
+ * DRAW LINE
+ * Draw a line on the screen from the beginning to the end.
+ *   INPUT  begin     The position of the beginning of the line
+ *          end       The position of the end of the line
+ *************************************************************************/
+void drawLine(const Point & begin, const Point & end,
+              float red, float green, float blue)
+{
+   // Get ready...
+   glBegin(GL_LINES);
+   glColor3f(red, green, blue);
+
+   // Draw the actual line
+   glVertex2f(begin.getX(), begin.getY());
+   glVertex2f(  end.getX(),   end.getY());
+
+   // Complete drawing
+   glColor3f(1.0 /* red % */, 1.0 /* green % */, 1.0 /* blue % */);
+   glEnd();
+}
+
+/***********************************************************************
+ * DRAW Lander
+ * Draw a moon-lander spaceship on the screen at a given point
+ ***********************************************************************/
+void drawLander(const Point & point)
+{
+   // ultra simple point
+   struct PT
+   {
+      int x;
+      int y;
+   } points[] = 
+   {
+      {-6, 0}, {-10,0}, {-8, 0}, {-8, 3},  // left foot
+      {-5, 4}, {-5, 7}, {-8, 3}, {-5, 4},  // left leg
+      {-1, 4}, {-3, 2}, { 3, 2}, { 1, 4}, {-1, 4}, // bottom
+      { 5, 4}, { 5, 7}, {-5, 7}, {-3, 7},  // engine square
+      {-6,10}, {-6,13}, {-3,16}, { 3,16},   // left of habitat
+      { 6,13}, { 6,10}, { 3, 7}, { 5, 7},   // right of habitat
+      { 5, 4}, { 8, 3}, { 5, 7}, { 5, 4},  // right leg
+      { 8, 3}, { 8, 0}, {10, 0}, { 6, 0}   // right foot
+   };
+
+   // draw it
+   glBegin(GL_LINE_STRIP);
+   for (int i = 0; i < sizeof(points) / sizeof(points[0]); i++)
+        glVertex2f(point.getX() + points[i].x,
+                   point.getY() + points[i].y);
+
+   // complete drawing
+   glEnd();
+   
+   
+}
+
+
+/***********************************************************************
+ * DRAW Lander Flame
+ * Draw the flames coming out of a moonlander for thrust
+ ***********************************************************************/
+void drawLanderFlames(const Point & point, 
+                      bool bottom,
+                      bool left,
+                      bool right)
+{
+   // simple point
+   struct PT
+   {
+      int x;
+      int y;
+   };
+
+   int iFlame = random(0, 3);  // so the flame flickers
+   
+   // draw it
+   glBegin(GL_LINE_LOOP);
+   glColor3f(1.0 /* red % */, 0.0 /* green % */, 0.0 /* blue % */);
+   
+   // bottom thrust
+   if (bottom)
+   {
+      PT points[3][3] =
+      {
+         { {-5,  -6}, { 0, -1}, { 3, -10} },
+         { {-3,  -6}, {-1, -2}, { 0, -15} },
+         { { 2, -12}, { 1,  0}, { 6,  -4} }
+      };
+      
+      glVertex2f(point.getX() - 2, point.getY() + 2);
+      for (int i = 0; i < 3; i++)
+         glVertex2f(point.getX() + points[iFlame][i].x,
+                   point.getY() + points[iFlame][i].y);
+      glVertex2f(point.getX() + 2, point.getY() + 2);
+   }
+
+   // right thrust
+   if (right)
+   {
+      PT points[3][3] =
+      {
+         { {10, 14}, { 8, 12}, {12, 12} },
+         { {12, 10}, { 8, 10}, {10,  8} },
+         { {14, 11}, {14, 11}, {14, 11} }
+      };
+      
+      glVertex2f(point.getX() + 6, point.getY() + 12);
+      for (int i = 0; i < 3; i++)
+         glVertex2f(point.getX() + points[iFlame][i].x,
+                    point.getY() + points[iFlame][i].y);
+      glVertex2f(point.getX() + 6, point.getY() + 10);
+   }
+
+   // left thrust
+   if (left)
+   {
+      PT points[3][3] =
+      {
+         { {-10, 14}, { -8, 12}, {-12, 12} },
+         { {-12, 10}, { -8, 10}, {-10,  8} },
+         { {-14, 11}, {-14, 11}, {-14, 11} }
+      };
+      
+      glVertex2f(point.getX() - 6, point.getY() + 12);
+      for (int i = 0; i < 3; i++)
+         glVertex2f(point.getX() + points[iFlame][i].x,
+                    point.getY() + points[iFlame][i].y);
+      glVertex2f(point.getX() - 6, point.getY() + 10);
+   }
+
+   glColor3f(1.0 /* red % */, 1.0 /* green % */, 1.0 /* blue % */);
+   glEnd();
+}
+
+
+/******************************************************************
+ * RANDOM
+ * This function generates a random number.  
+ *
+ *    INPUT:   min, max : The number of values (min <= num < max)
+ *    OUTPUT   <return> : Return the integer
+ ****************************************************************/
+int random(int min, int max)
+{
+   assert(min <= max);
+   int num = (rand() % (max - min)) + min;
+   assert(min <= num && num <= max);
+
+   return num;
+}
+
+/******************************************************************
+ * RANDOM
+ * This function generates a random number.  
+ *
+ *    INPUT:   min, max : The number of values (min <= num < max)
+ *    OUTPUT   <return> : Return the double
+ ****************************************************************/
+double random(double min, double max)
+{
+   assert(min <= max);
+   double num = min + ((double)rand() / (double)RAND_MAX * (max - min));
+   
+   assert(min <= num && num <= max);
+
+   return num;
+}
+
+
+/************************************************************************
+ * DRAW RECTANGLE
+ * Draw a rectangle on the screen centered on a given point (center) of
+ * a given size (width, height), and at a given orientation (rotation)
+ *  INPUT  center    Center of the rectangle
+ *         width     Horizontal size
+ *         height    Vertical size
+ *         rotation  Orientation
+ *************************************************************************/
+void drawRect(const Point & center, int width, int height, int rotation)
+{
+   Point tl(false /*check*/); // top left
+   Point tr(false /*check*/); // top right 
+   Point bl(false /*check*/); // bottom left
+   Point br(false /*check*/); // bottom right
+
+   //Top Left point
+   tl.setX(center.getX() - (width  / 2));
+   tl.setY(center.getY() + (height / 2));
+
+   //Top right point
+   tr.setX(center.getX() + (width  / 2));
+   tr.setY(center.getY() + (height / 2));
+
+   //Bottom left point
+   bl.setX(center.getX() - (width  / 2));
+   bl.setY(center.getY() - (height / 2));
+
+   //Bottom right point
+   br.setX(center.getX() + (width  / 2));
+   br.setY(center.getY() - (height / 2));
+
+   //Rotate all points the given degrees
+   rotate(tl, center, rotation);
+   rotate(tr, center, rotation);
+   rotate(bl, center, rotation);
+   rotate(br, center, rotation);
+
+   //Finally draw the rectangle
+   glBegin(GL_LINE_STRIP);
+   glVertex2f(tl.getX(), tl.getY());
+   glVertex2f(tr.getX(), tr.getY());
+   glVertex2f(br.getX(), br.getY());
+   glVertex2f(bl.getX(), bl.getY());
+   glVertex2f(tl.getX(), tl.getY());
+   glEnd();
+}
+
+/************************************************************************
+ * DRAW CIRCLE
+ * Draw a circle from a given location (center) of a given size (radius).
+ *  INPUT   center   Center of the circle
+ *          radius   Size of the circle
+ *************************************************************************/
+void drawCircle(const Point & center, int radius)
+{
+   assert(radius > 1.0);
+   const double increment = 1.0 / (double)radius;
+
+   // begin drawing
+   glBegin(GL_LINE_LOOP);
+
+   // go around the circle
+   for (double radians = 0; radians < M_PI * 2.0; radians += increment)
+      glVertex2f(center.getX() + (radius * cos(radians)),
+                 center.getY() + (radius * sin(radians)));
+   
+   // complete drawing
+   glEnd();   
+}
+
+/************************************************************************
+ * DRAW DOT
+ * Draw a single point on the screen, 2 pixels by 2 pixels
+ *  INPUT point   The position of the dow
+ *************************************************************************/
+void drawDot(const Point & point)
+{
+   // Get ready, get set...
+   glBegin(GL_POINTS);
+
+   // Go...
+   glVertex2f(point.getX(),     point.getY()    );
+   glVertex2f(point.getX() + 1, point.getY()    );
+   glVertex2f(point.getX() + 1, point.getY() + 1);
+   glVertex2f(point.getX(),     point.getY() + 1);
+
+   // Done!  OK, that was a bit too dramatic
+   glEnd();
+}
+
+/************************************************************************
+ * DRAW Tough Bird
+ * Draw a tough bird on the screen
+ *  INPUT point   The position of the sacred
+ *        radius  The size of the bird
+ *        hits    How many its remaining to kill the bird 
+ *************************************************************************/
+void drawToughBird(const Point & center, float radius, int hits)
+{
+   assert(radius > 1.0);
+   const double increment = M_PI / 6.0;
+   
+   // begin drawing
+   glBegin(GL_TRIANGLES);   
+
+   // three points: center, pt1, pt2
+   Point pt1(false /*check*/);
+   pt1.setX(center.getX() + (radius * cos(0.0)));
+   pt1.setY(center.getY() + (radius * sin(0.0)));   
+   Point pt2(pt1);
+
+   // go around the circle
+   for (double radians = increment;
+        radians <= M_PI * 2.0 + .5;
+        radians += increment)
+   {
+      pt2.setX(center.getX() + (radius * cos(radians)));
+      pt2.setY(center.getY() + (radius * sin(radians)));
+
+      glVertex2f(center.getX(), center.getY());
+      glVertex2f(pt1.getX(),    pt1.getY()   );
+      glVertex2f(pt2.getX(),    pt2.getY()   );
+      
+      pt1 = pt2;
+   }
+      
+   // complete drawing
+   glEnd();   
+
+   // draw the score in the center
+   if (hits > 0 && hits < 10)
+   {
+      glColor3f(0.0 /* red % */, 0.0 /* green % */, 0.0 /* blue % */);
+      glRasterPos2f(center.getX() - 4, center.getY() - 3);
+      glutBitmapCharacter(GLUT_BITMAP_8_BY_13, (char)(hits + '0'));
+      glColor3f(1.0, 1.0, 1.0); // reset to white
+   }
+}
+
+/************************************************************************
+ * DRAW Sacred Bird
+ * Draw a sacred bird on the screen
+ *  INPUT point   The position of the sacred
+ *        radius  The size of the bird
+ *************************************************************************/
+void drawSacredBird(const Point & center, float radius)
+{
+   // handle auto-rotation
+   static float rotation = 0.0;   
+   rotation += 5.0;
+
+   
+   // begin drawing
+   glBegin(GL_LINE_LOOP);
+   glColor3f(1.0 /* red % */, 0.0 /* green % */, 0.0 /* blue % */);
+
+   
+   //loop around a circle the given number of times drawing a line from
+   //one point to the next
+   for (int i = 0; i < 5; i++)
+   {
+      Point temp(false /*check*/);
+      float radian = (float)i * (M_PI * 2.0) * 0.4;
+      temp.setX(center.getX() + (radius * cos(radian)));
+      temp.setY(center.getY() + (radius * sin(radian)));
+      rotate(temp, center, rotation);
+      glVertex2f(temp.getX(), temp.getY());
+   }
+   
+   // complete drawing
+   glColor3f(1.0, 1.0, 1.0); // reset to white
+   glEnd();   
+}
+
+/**********************************************************************
+ * DRAW SMALL ASTEROID
+ **********************************************************************/
+void drawSmallAsteroid( const Point & center, int rotation)
+{
+   // ultra simple point
+   struct PT
+   {
+      int x;
+      int y;
+   } points[] = 
+   {
+      {-5, 9},  {4, 8},   {8, 4},   
+      {8, -5},  {-2, -8}, {-2, -3}, 
+      {-8, -4}, {-8, 4},  {-5, 10}
+   };
+   
+   glBegin(GL_LINE_STRIP);
+   for (int i = 0; i < sizeof(points)/sizeof(PT); i++)
+   {
+      Point pt(center.getX() + points[i].x, 
+               center.getY() + points[i].y);
+      rotate(pt, center, rotation);
+      glVertex2f(pt.getX(), pt.getY());
+   }
+   glEnd();
+}
+
+/**********************************************************************
+ * DRAW MEDIUM ASTEROID
+ **********************************************************************/
+void drawMediumAsteroid( const Point & center, int rotation)
+{
+   // ultra simple point
+   struct PT
+   {
+      int x;
+      int y;
+   } points[] = 
+   {
+      {2, 8},    {8, 15},    {12, 8}, 
+      {6, 2},    {12, -6},   {2, -15},
+      {-6, -15}, {-14, -10}, {-15, 0},
+      {-4, 15},  {2, 8}
+   };
+   
+   glBegin(GL_LINE_STRIP);
+   for (int i = 0; i < sizeof(points)/sizeof(PT); i++)
+   {
+      Point pt(center.getX() + points[i].x, 
+               center.getY() + points[i].y);
+      rotate(pt, center, rotation);
+      glVertex2f(pt.getX(), pt.getY());
+   }
+   glEnd();
+}
+
+/**********************************************************************
+ * DRAW LARGE ASTEROID
+ **********************************************************************/
+void drawLargeAsteroid( const Point & center, int rotation)
+{
+   // ultra simple point
+   struct PT
+   {
+      int x;
+      int y;
+   } points[] = 
+   {
+      {0, 12},    {8, 20}, {16, 14},
+      {10, 12},   {20, 0}, {0, -20},
+      {-18, -10}, {-20, -2}, {-20, 14},
+      {-10, 20},  {0, 12}
+   };
+   
+   glBegin(GL_LINE_STRIP);
+   for (int i = 0; i < sizeof(points)/sizeof(PT); i++)
+   {
+      Point pt(center.getX() + points[i].x, 
+               center.getY() + points[i].y);
+      rotate(pt, center, rotation);
+      glVertex2f(pt.getX(), pt.getY());
+   }
+   glEnd();
+}
+
+
+/************************************************************************       
+ * DRAW Ship                                                                    
+ * Draw a spaceship on the screen                                               
+ *  INPUT point   The position of the ship                                      
+ *        angle   Which direction it is ponted                                  
+ *************************************************************************/
+void drawShip(const Point & center, int rotation, bool thrust)
+{
+   // ultra simple point
+   struct PT
+   {
+      int x;
+      int y;
+   };
+   
+   // draw the ship                                                 
+   const PT pointsShip[] = 
+   { // top   r.wing   r.engine l.engine  l.wing    top
+      {0, 4}, {4, -4}, {1, -2}, {-1, -2}, {-4, -4}, {0, 4}  
+   };
+   
+   glBegin(GL_LINE_STRIP);
+   for (int i = 0; i < sizeof(pointsShip)/sizeof(PT); i++)
+   {
+      Point pt(center.getX() + pointsShip[i].x, 
+               center.getY() + pointsShip[i].y);
+      rotate(pt, center, rotation);
+      glVertex2f(pt.getX(), pt.getY());
+   }
+   glEnd();
+
+   // draw the flame if necessary
+   if (thrust)
+   {
+      const PT pointsFlame[3][5] =
+      {
+         { {-2, -3}, {-2, -13}, { 0, -6}, { 2, -13}, {2, -3} },
+         { {-2, -3}, {-4,  -9}, {-1, -7}, { 1, -14}, {2, -3} },
+         { {-2, -3}, {-1, -14}, { 1, -7}, { 4,  -9}, {2, -3} }
+      };
+      
+      glBegin(GL_LINE_STRIP);
+      glColor3f(1.0 /* red % */, 0.0 /* green % */, 0.0 /* blue % */);
+      int iFlame = random(0, 3);
+      for (int i = 0; i < 5; i++)
+      {
+         Point pt(center.getX() + pointsFlame[iFlame][i].x, 
+                  center.getY() + pointsFlame[iFlame][i].y);
+         rotate(pt, center, rotation);
+         glVertex2f(pt.getX(), pt.getY());
+      }
+      glColor3f(1.0, 1.0, 1.0); // reset to white                                  
+      glEnd();
+   }
+}
+
+
+
+/***********************************************************************
+ * Header File:
+ *    User Interface Draw : put pixels on the screen
+ * Author:
+ *    Br. Helfrich
+ * Summary:
+ *    This is the code necessary to draw on the screen. We have a collection
+ *    of procedural functions here because each draw function does not
+ *    retain state. In other words, they are verbs (functions), not nouns
+ *    (variables) or a mixture (objects)
+ ************************************************************************/
+
+#ifndef UI_DRAW_H
+#define UI_DRAW_H
+
+#include <string>     // To display text on the screen
+#include <cmath>      // for M_PI, sin() and cos()
+#include "point.h"    // Where things are drawn
+using std::string;
+
+/************************************************************************
+ * DRAW DIGIT
+ * Draw a single digit in the old school line drawing style.  The
+ * size of the glyph is 8x11 or x+(0..7), y+(0..10)
+ *************************************************************************/
+void drawDigit(const Point & topLeft, char digit);
+
+/*************************************************************************
+ * DRAW NUMBER
+ * Display an integer on the screen using the 7-segment method
+ *************************************************************************/
+void drawNumber(const Point & topLeft, int number);
+
+/*************************************************************************
+ * DRAW TEXT
+ * Draw text using a simple bitmap font
+ ************************************************************************/
+void drawText(const Point & topLeft, const char * text);
+
+/************************************************************************
+ * ROTATE
+ * Rotate a given point (point) around a given origin (center) by a given
+ * number of degrees (angle).
+ *************************************************************************/
+void rotate(Point & point, const Point & origin, int rotation = 0);
+
+/************************************************************************
+ * DRAW RECTANGLE
+ * Draw a rectangle on the screen centered on a given point (center) of
+ * a given size (width, height), and at a given orientation (rotation)
+ * measured in degrees (0 - 360)
+ *************************************************************************/
+void drawRect(const Point & center, int width, int height, int rotation);
+
+/************************************************************************
+ * DRAW CIRCLE
+ * Draw a circle from a given location (center) of a given size (radius).
+ *************************************************************************/
+void drawCircle(const Point & center, int radius);
+
+/************************************************************************
+ * DRAW POLYGON
+ * Draw a polygon from a given location (center) of a given size (radius).
+ *************************************************************************/
+void drawPolygon(const Point & center,
+                 int radius = 20,
+                 int points = 4,
+                 int rotation = 0);
+
+/************************************************************************
+ * DRAW LINE
+ * Draw a line on the screen from the beginning to the end.
+ *************************************************************************/
+void drawLine(const Point & begin, const Point & end,
+             float red = 1.0, float green = 1.0, float blue = 1.0);
+
+
+/***********************************************************************
+ * DRAW Lander
+ * Draw a moon-lander spaceship on the screen at a given point
+ ***********************************************************************/
+void drawLander(const Point & point);
+
+/***********************************************************************
+ * DRAW Lander Flame
+ * Draw the flames coming out of a moonlander for thrust
+ ***********************************************************************/
+void drawLanderFlames(const Point & point, 
+                      bool bottom,
+                      bool left,
+                      bool right);
+
+/************************************************************************
+ * DRAW DOT
+ * Draw a single point on the screen, 2 pixels by 2 pixels
+ *************************************************************************/
+void drawDot(const Point & point);
+
+/************************************************************************
+ * DRAW Sacred Bird
+ * Draw the bird on the screen
+ *************************************************************************/
+void drawSacredBird(const Point & center, float radius);
+
+/************************************************************************
+ * DRAW Tough Bird
+ * Draw a tough bird on the screen
+ *************************************************************************/
+void drawToughBird(const Point & center, float radius, int hits);
+
+/************************************************************************      
+ * DRAW Ship                                                                   
+ * Draw the spaceship on the screen                                         
+ *************************************************************************/
+void drawShip(const Point & point, int rotation, bool thrust = false);
+
+/**********************************************************************
+ * DRAW * ASTEROID
+ **********************************************************************/
+void drawSmallAsteroid( const Point & point, int rotation);
+void drawMediumAsteroid(const Point & point, int rotation);
+void drawLargeAsteroid( const Point & point, int rotation);
+
+/******************************************************************
+ * RANDOM
+ * This function generates a random number.  The user specifies
+ * The parameters 
+ *    INPUT:   min, max : The number of values (min <= num <= max)
+ *    OUTPUT   <return> : Return the integer
+ ****************************************************************/
+int    random(int    min, int    max);
+double random(double min, double max);
+
+
+#endif // UI_DRAW_H
+
+
+/***********************************************************************
+ * Source File:
+ *     UI INTERACT
+ * Author:
+ *     Br. Helfrich
+ * Description:
+ *     Implement the interfaces specified in uiInterface.h.  This handles
+ *     all the interfaces and events necessary to work with OpenGL.  Your
+ *     program will interface with this thorough the callback function
+ *     pointer towards the bottom of the file.
+ ************************************************************************/
+
+#include <string>     // need you ask?
+#include <sstream>    // convert an integer into text
+#include <cassert>    // I feel the need... the need for asserts
+#include <time.h>     // for clock
+#include <cstdlib>    // for rand()
+
+
+#ifdef __APPLE__
+#include <openGL/gl.h>    // Main OpenGL library
+#include <GLUT/glut.h>    // Second OpenGL library
+#endif // __APPLE__
+
+#ifdef __linux__
+#include <GL/gl.h>    // Main OpenGL library
+#include <GL/glut.h>  // Second OpenGL library
+#endif // __linux__
+
+#ifdef _WIN32
+#include <stdio.h>
+#include <stdlib.h>
+#include <Gl/glut.h>           // OpenGL library we copied
+#include <ctime>            // for ::Sleep();
+#include <Windows.h>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+#endif // _WIN32
+
+#include "uiInteract.h"
+#include "point.h"
+
+using namespace std;
+
+
+/*********************************************************************
+ * SLEEP
+ * Pause for a while.  We want to put the program to sleep until it
+ * is time to draw again.  Note that this requires us to tell the OS
+ * that we are idle.  the nanosleep function performs this task for us
+ *   INPUT: msSleep: sleep time in milliseconds
+ *********************************************************************/
+void sleep(unsigned long msSleep)
+{
+   // Windows handles sleep one way
+#ifdef _WIN32
+   ::Sleep(msSleep + 35);
+
+   // Unix-based operating systems (OS-X, Linux) do it another
+#else // LINUX, XCODE
+   timespec req = {};
+   time_t sec = (int)(msSleep / 1000);
+   msSleep -= (sec * 1000);
+
+   req.tv_sec = sec;
+   req.tv_nsec = msSleep * 1000000L;
+
+   while (nanosleep(&req, &req) == -1)
+      ;
+#endif // LINUX, XCODE
+   return;
+}
+
+/************************************************************************
+ * DRAW CALLBACK
+ * This is the main callback from OpenGL. It gets called constantly by
+ * the graphics engine to refresh and draw the window.  Here we will
+ * clear the background buffer, draw on it, and send it to the forefront
+ * when the appropriate time period has passsed.
+ *
+ * Note: This and all other callbacks can't be member functions, they must
+ * have global scope for OpenGL to see them.
+ *************************************************************************/
+void drawCallback()
+{
+   // even though this is a local variable, all the members are static
+   Interface ui;
+   // Prepare the background buffer for drawing
+   glClear(GL_COLOR_BUFFER_BIT); //clear the screen
+   glColor3f(1,1,1);
+   
+   //calls the client's display function
+   assert(ui.callBack != NULL);
+   ui.callBack(&ui, ui.p);
+   
+   //loop until the timer runs out
+   if (!ui.isTimeToDraw())
+      sleep((unsigned long)((ui.getNextTick() - clock()) / 1000));
+
+   // from this point, set the next draw time
+   ui.setNextDrawTime();
+
+   // bring forth the background buffer
+   glutSwapBuffers();
+
+   // clear the space at the end
+   ui.keyEvent();
+}
+
+/************************************************************************
+ * KEY DOWN CALLBACK
+ * When a key on the keyboard has been pressed, we need to pass that
+ * on to the client.  Currently, we are only registering the arrow keys
+ *   INPUT   key:   the key we pressed according to the GLUT_KEY_ prefix
+ *           x y:   the position in the window, which we ignore
+ *************************************************************************/
+void keyDownCallback(int key, int x, int y)
+{
+   // Even though this is a local variable, all the members are static
+   // so we are actually getting the same version as in the constructor.
+   Interface ui;
+   ui.keyEvent(key, true /*fDown*/);
+}
+
+/************************************************************************
+ * KEY UP CALLBACK
+ * When the user has released the key, we need to reset the pressed flag
+ *   INPUT   key:   the key we pressed according to the GLUT_KEY_ prefix
+ *           x y:   the position in the window, which we ignore
+ *************************************************************************/
+void keyUpCallback(int key, int x, int y)
+{
+   // Even though this is a local variable, all the members are static
+   // so we are actually getting the same version as in the constructor.
+   Interface ui;
+   ui.keyEvent(key, false /*fDown*/);
+}
+
+/***************************************************************
+ * KEYBOARD CALLBACK
+ * Generic callback to a regular ascii keyboard event, such as
+ * the space bar or the letter 'q'
+ ***************************************************************/
+void keyboardCallback(unsigned char key, int x, int y)
+{
+   // Even though this is a local variable, all the members are static
+   // so we are actually getting the same version as in the constructor.
+   Interface ui;
+   ui.keyEvent(key, true /*fDown*/);
+}
+
+/***************************************************************
+ * INTERFACE : KEY EVENT
+ * Either set the up or down event for a given key
+ *   INPUT   key     which key is pressed
+ *           fDown   down or brown
+ ****************************************************************/
+void Interface::keyEvent(int key, bool fDown)
+{
+   switch(key)
+   {
+      case GLUT_KEY_DOWN:
+         isDownPress = fDown;
+         break;
+      case GLUT_KEY_UP:
+         isUpPress = fDown;
+         break;
+      case GLUT_KEY_RIGHT:
+         isRightPress = fDown;
+         break;
+      case GLUT_KEY_LEFT:
+         isLeftPress = fDown;
+         break;
+      case GLUT_KEY_HOME:
+      case ' ':
+         isSpacePress = fDown;
+         break;
+   }
+}
+/***************************************************************
+ * INTERFACE : KEY EVENT
+ * Either set the up or down event for a given key
+ *   INPUT   key     which key is pressed
+ *           fDown   down or brown
+ ****************************************************************/
+void Interface::keyEvent()
+{
+   if (isDownPress)
+      isDownPress++;
+   if (isUpPress)
+      isUpPress++;
+   if (isLeftPress)
+      isLeftPress++;
+   if (isRightPress)
+      isRightPress++;
+   isSpacePress = false;
+}
+
+
+/************************************************************************
+ * INTEFACE : IS TIME TO DRAW
+ * Have we waited long enough to draw swap the background buffer with
+ * the foreground buffer?
+ *************************************************************************/
+bool Interface::isTimeToDraw()
+{
+   return ((unsigned int)clock() >= nextTick);
+}
+
+/************************************************************************
+ * INTERFACE : SET NEXT DRAW TIME
+ * What time should we draw the buffer again?  This is a function of
+ * the current time and the frames per second.
+ *************************************************************************/
+void Interface::setNextDrawTime()
+{
+   nextTick = clock() + static_cast<int> (timePeriod * CLOCKS_PER_SEC);
+}
+
+/************************************************************************
+ * INTERFACE : SET FRAMES PER SECOND
+ * The frames per second dictates the speed of the game.  The more frames
+ * per second, the quicker the game will appear to the user.  We will default
+ * to 30 frames/second but the client can set this at will.
+ *    INPUT  value        The number of frames per second.  30 is default
+ *************************************************************************/
+void Interface::setFramesPerSecond(double value)
+{
+    timePeriod = (1 / value);
+}
+
+/***************************************************
+ * STATICS
+ * All the static member variables need to be initialized
+ * Somewhere globally.  This is a good spot
+ **************************************************/
+int          Interface::isDownPress  = 0;
+int          Interface::isUpPress    = 0;
+int          Interface::isLeftPress  = 0;
+int          Interface::isRightPress = 0;
+bool         Interface::isSpacePress = false;
+bool         Interface::initialized  = false;
+double       Interface::timePeriod   = 1.0 / 30; // default to 30 frames/second
+unsigned int Interface::nextTick     = 0;        // redraw now please
+void *       Interface::p            = NULL;
+void (*Interface::callBack)(const Interface *, void *) = NULL;
+
+
+/************************************************************************
+ * INTERFACE : DESTRUCTOR
+ * Nothing here!
+ ***********************************************************************/
+Interface::~Interface()
+{
+}
+
+
+/************************************************************************
+ * INTEFACE : INITIALIZE
+ * Initialize our drawing window.  This will set the size and position,
+ * get ready for drawing, set up the colors, and everything else ready to
+ * draw the window.  All these are part of initializing Open GL.
+ *  INPUT    argc:       Count of command-line arguments from main
+ *           argv:       The actual command-line parameters
+ *           title:      The text for the titlebar of the window
+ *************************************************************************/
+void Interface::initialize(int argc, char ** argv, const char * title, Point topLeft, Point bottomRight)
+{
+   if (initialized)
+      return;
+   
+   // set up the random number generator
+   srand((long)(argv));
+
+   // create the window
+   glutInit(&argc, argv);
+   Point point;
+   glutInitWindowSize(   // size of the window
+      (int)(bottomRight.getX() - topLeft.getX()),
+      (int)(topLeft.getY() - bottomRight.getY()));
+            
+   glutInitWindowPosition( 10, 10);                // initial position 
+   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);  // double buffering
+   glutCreateWindow(title);              // text on titlebar
+   glutIgnoreKeyRepeat(true);
+   
+   // set up the drawing style: B/W and 2D
+   glClearColor(0, 0, 0, 0);          // Black is the background color
+   gluOrtho2D((int)topLeft.getX(), (int)bottomRight.getX(),
+              (int)bottomRight.getY(), (int)topLeft.getY()); // 2D environment
+
+   // register the callbacks so OpenGL knows how to call us
+   glutDisplayFunc(   drawCallback    );
+   glutIdleFunc(      drawCallback    );
+   glutKeyboardFunc(  keyboardCallback);
+   glutSpecialFunc(   keyDownCallback );
+   glutSpecialUpFunc( keyUpCallback   );
+   initialized = true;
+   
+   // done
+   return;
+}
+
+/************************************************************************
+ * INTERFACE : RUN
+ *            Start the main graphics loop and play the game
+ * INPUT callBack:   Callback function.  Every time we are beginning
+ *                   to draw a new frame, we first callback to the client
+ *                   to see if he wants to do anything, such as move
+ *                   the game pieces or respond to input
+ *       p:          Void point to whatever the caller wants.  You
+ *                   will need to cast this back to your own data
+ *                   type before using it.
+ *************************************************************************/
+void Interface::run(void (*callBack)(const Interface *, void *), void *p)
+{
+   // setup the callbacks
+   this->p = p;
+   this->callBack = callBack;
+
+   glutMainLoop();
+
+   return;
+}
+
+
+/*********************************************
+ * Header file:
+ *    UI INTERFACE
+ * Author:
+ *    Br. Helfrich
+ * Summary:
+ *    This module will create an OpenGL window,
+ *    enter the OpenGL main loop, and accept events.
+ *    The main methods are:
+ *    1. Constructors - Create the window
+ *    2. run()        - Run the main loop
+ *    3. callback     - Specified in Run, this user-provided
+ *                      function will get called with every frame
+ *    4. isDown()     - Is a given key pressed on this loop?
+ **********************************************/
+
+#ifndef UI_INTERFACE_H
+#define UI_INTERFACE_H
+
+ #include "point.h"
+
+/********************************************
+ * INTERFACE
+ * All the data necessary to keep our graphics
+ * state in memory
+ ********************************************/
+class Interface
+{
+public:
+   // Default constructor useful for setting up the random variables
+   // or for opening the file for output
+   Interface() { initialize(0, 0x0000, "Window", Point(-50, 50), Point(50, -50)); };
+
+   // Constructor if you want to set up the window with anything but
+   // the default parameters
+   Interface(int argc, char ** argv, const char * title, Point topLeft, Point bottomRight)
+   {
+      initialize(argc, argv, title, topLeft, bottomRight);
+   }
+   
+   // Destructor, incase any housecleaning needs to occr
+   ~Interface();
+
+   // This will set the game in motion
+   void run(void (*callBack)(const Interface *, void *), void *p);
+
+   // Is it time to redraw the screen
+   bool isTimeToDraw();
+
+   // Set the next draw time based on current time and time period
+   void setNextDrawTime();
+
+   // Retrieve the next tick time... the time of the next draw.
+   unsigned int getNextTick() { return nextTick; };
+
+   // How many frames per second are we configured for?
+   void setFramesPerSecond(double value);
+   
+   // Key event indicating a key has been pressed or not.  The callbacks
+   // should be the only onces to call this
+   void keyEvent(int key, bool fDown);
+   void keyEvent();
+
+   // Current frame rate
+   double frameRate() const { return timePeriod;   };
+   
+   // Get various key events
+   int  isDown()      const { return isDownPress;  };
+   int  isUp()        const { return isUpPress;    };
+   int  isLeft()      const { return isLeftPress;  };
+   int  isRight()     const { return isRightPress; };
+   bool isSpace()     const { return isSpacePress; };
+   
+   static void *p;                   // for client
+   static void (*callBack)(const Interface *, void *);
+
+private:
+   void initialize(int argc, char ** argv, const char * title, Point topLeft, Point bottomRight);
+
+   static bool         initialized;  // only run the constructor once!
+   static double       timePeriod;   // interval between frame draws
+   static unsigned int nextTick;     // time (from clock()) of our next draw
+
+   static int  isDownPress;          // is the down arrow currently pressed?
+   static int  isUpPress;            //    "   up         "
+   static int  isLeftPress;          //    "   left       "
+   static int  isRightPress;         //    "   right      "
+   static bool isSpacePress;         //    "   space      "
+};
+
+
+
+/************************************************************************
+ * DRAW CALLBACK
+ * This is the main callback from OpenGL. It gets called constantly by
+ * the graphics engine to refresh and draw the window.  Here we will
+ * clear the background buffer, draw on it, and send it to the forefront
+ * when the appropriate time period has passsed.
+ *
+ * Note: This and all other callbacks can't be member functions, they must
+ * have global scope for OpenGL to see them.
+ *************************************************************************/
+void drawCallback();
+
+/************************************************************************
+ * KEY DOWN CALLBACK
+ * When a key on the keyboard has been pressed, we need to pass that
+ * on to the client.  Currnetly, we are only registering the arrow keys
+ *************************************************************************/
+void keyDownCallback(int key, int x, int y);
+
+/************************************************************************
+ * KEY UP CALLBACK
+ * When the user has released the key, we need to reset the pressed flag
+ *************************************************************************/
+void keyUpCallback(int key, int x, int y);
+
+/***************************************************************
+ * KEYBOARD CALLBACK
+ * Generic callback to a regular ascii keyboard event, such as
+ * the space bar or the letter 'q'
+ ***************************************************************/
+void keyboardCallback(unsigned char key, int x, int y);
+
+/************************************************************************
+ * RUN
+ * Set the game in action.  We will get control back in our drawCallback
+ *************************************************************************/
+void run();
+
+#endif // UI_INTERFACE_H
+
+
+/***********************************************************************
+ * Source File:
+ *    velocity.cpp 
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+#include "velocity.h"
+
+/*******************************************
+ * VELOCITY : CONSTRUCTORS 
+ * DEFUALT 
+ *******************************************/
+ Velocity::Velocity()
+ {
+ 	 dx = 0.0; 
+ 	 dy = 0.0;
+}
+
+/*******************************************
+ * VELOCITY : CONSTRUCTORS 
+ * NON-DEFUALT 
+ *******************************************/
+Velocity::Velocity(float dx, float dy)
+{
+	this->dx = dx;
+	this->dy = dy;
+}
+
+
+/*******************************************
+ * VELOCITY : SET X
+ * Set the X position if the value is within range
+ *******************************************/
+void Velocity::setDx(float dx)
+{
+   this->dx = dx;
+} 
+
+/*******************************************
+ * VELOCITY : SET Y
+ * Set the y position if the value is within range
+ *******************************************/
+void Velocity::setDy(float dy)
+{
+   this->dy = dy;
+} 
+
+/*******************************************
+ * VELOCITY : SET Point
+ * Set the y position if the value is within range
+ *******************************************/
+ void Velocity::setPoint(float x, float y)
+ {
+ 	point.setX(x);
+ 	point.setY(y);
+ }
+
+
+/***********************************************************************
+ * Header File:  
+ *     Velocity.h : 
+ * Author:
+ *    Makram Ibrahim
+ * Summary:
+ *    Everything we need to know about a location on the screen, including
+ *    the location and the bounds.
+ ************************************************************************/
+
+#ifndef VELOCITY_H
+#define VELOCITY_H
+#include "point.h"
+
+#include <iostream>
+
+/*********************************************
+ * VELOCITY : CLASS 
+ *   
+ *********************************************/
+class Velocity
+{
+
+private:
+   float dx;
+   float dy;
+   Point point;
+
+public:
+   // constructors
+    Velocity();
+    Velocity(float dx, float dy);
+
+   // Getters
+  Point getPoint()    const {return point; }
+   float getDx()      const { return dx;   }
+   float getDy()      const { return dy;   } 
+
+   // setters
+   void setDx(float dx);
+   void setDy(float dy);
+   void setPoint(float x, float y);
+};
+
+#endif // VELOCITY_H
+

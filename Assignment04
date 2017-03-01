@@ -1,0 +1,345 @@
+
+/***************************************************************
+ * File: assign04.cpp
+ * Author: (your name here)
+ * Purpose: Contains the main function to test the Product class.
+ ***************************************************************/
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+#include "product.h"
+
+int main()
+{
+   // Declare your Product object here
+   Product data;
+
+   // Call your prompt function here
+   data.prompt();
+
+   cout << endl;
+   cout << "Choose from the following options:\n";
+   cout << "1 - Advertising profile\n";
+   cout << "2 - Inventory line item\n";
+   cout << "3 - Receipt\n";
+   cout << endl;
+   cout << "Enter the option that you would like displayed: ";
+   int choice;
+   cin >> choice;
+   cout << endl;
+   
+   if (choice == 1)
+   {
+    
+      // Call your display advertising profile function here
+      data. displayName();
+   }
+   else if (choice == 2)
+   {
+      // Call your display inventory line item function here
+       data.displayPrice();
+   }
+   else
+   {
+      // Call your display receipt function here
+       data.displayDesc();
+       data.totalPrice();
+   }
+
+   return 0;
+}
+
+
+###############################################################
+# Program:
+#     Assignment 04, Product inventory
+#     Brother McCracken, CS165
+# Author:
+#     Makram Ibrahim
+# Summary:
+#     This program will helps the user to track their order
+#     product. The program will store all infomration, comptue
+#     shpping cost and display receipt with a total expenses.
+#         
+###############################################################
+
+# We will learn fancier compilation steps later, but this is
+# good enough for now...
+a.out : product.h product.cpp assign04.cpp
+	g++ product.cpp assign04.cpp
+
+
+/***************************************************************
+ * File: product.cpp
+ * Author: Makram Ibraim
+ * Purpose: Contains the method implementations for the Product class.
+ ***************************************************************/
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+#include "product.h"
+
+/****************************************************
+ *PROMPT FUNCTION:
+ * Ask the user for input
+ ***************************************************/
+int Product::prompt()
+{
+   cout << "Enter name: ";
+   getline(cin, name);    // get a complete line here
+
+   cout << "Enter description: ";
+   getline(cin, desc);    // get another compelte line here 
+
+   cout << "Enter weight: ";
+   cin  >> weight;
+
+ 
+   do // do will continue repompt the user
+   {
+      cout << "Enter price: ";
+      cin  >> bPrice;
+      if (cin.fail())    // if input letter reprompt 
+      {
+         cin.clear();             // clear the error
+         cin.ignore(256, '\n');  // ignore outputs
+         bPrice = -1;
+      }
+   }
+   while (bPrice <= 0);  // if the price less then 0
+                         // reprompt for price.
+}
+
+/*******************************************************
+ *SALES TAX FUNCTION:
+ * Add 6% taxes on sale
+ *******************************************************/      
+float Product::getSalesTax()
+{  
+   return bPrice * 6 / 100; // Add the taxes 
+}
+
+/********************************************************
+ *SHIPPING COST:
+ *Add 0.10 for very pound if it's over than 5lbs  
+ ********************************************************/
+float Product::getShippingCost()
+{
+   float cost;      // assign a local veraible 
+    
+   if (weight <= 5) // make sure less then 5lbs 
+   {
+      cost = 2;    // the cost is $2 until 5lbs
+   }
+   else 
+   {   // Add $0.10 per pound over 5lbs
+      cost = (weight - 5) * (0.1) + 2;  
+   }
+
+   return cost;  // return cost
+}
+
+/*******************************************************
+ *TOTAL PRICE FUNCTION:
+ *Collect the base price, taxes and shipping
+ *******************************************************/
+float Product::totalPrice()
+{
+   // add pricce, taxes and shipping cost. 
+  return bPrice + getSalesTax() + getShippingCost();
+}
+
+/**********************************************************
+ *DISPLY NAME FUNCTION:
+ *Get name, price and description display..
+ *********************************************************/
+void Product::displayName()
+{
+   cout << name << " - " << "$"  << bPrice << endl;
+   cout << "(" << desc << ")" << endl;  
+}
+
+/*********************************************************
+ *DISPLAY PRICE FUNCTION:
+ *Get price, name and weight to display 
+ ********************************************************/
+void Product::displayPrice()
+{
+  
+   cout << "$" << bPrice << " - "
+        << name << " - " << weight << " lbs" << endl;
+}
+
+/*********************************************************
+ *DISPLAY DESCRIPTION:
+ * Get the list to display on the screen.
+ ********************************************************/
+void Product::displayDesc()
+{
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint); // Always show the decimal
+   cout.precision(2);         // Show two digits only.
+
+   // get the list name
+   cout << name << endl;
+   // display the list.
+   cout << "  Price:         $   " << bPrice << endl;
+   cout << "  Sales tax:     $    " << getSalesTax() << endl;
+   cout << "  Shipping cost: $    " << getShippingCost() << endl;
+   cout << "  Total:         $   " << totalPrice() << endl;
+}
+
+/***************************************************************
+ * File: product.cpp
+ * Author: Makram Ibraim
+ * Purpose: Contains the method implementations for the Product class.
+ ***************************************************************/
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+#include "product.h"
+
+/****************************************************
+ *PROMPT FUNCTION:
+ * Ask the user for input
+ ***************************************************/
+int Product::prompt()
+{
+   cout << "Enter name: ";
+   getline(cin, name);    // get a complete line here
+
+   cout << "Enter description: ";
+   getline(cin, desc);    // get another compelte line here 
+
+   cout << "Enter weight: ";
+   cin  >> weight;
+
+ 
+   do // do will continue repompt the user
+   {
+      cout << "Enter price: ";
+      cin  >> bPrice;
+      if (cin.fail())    // if input letter reprompt 
+      {
+         cin.clear();             // clear the error
+         cin.ignore(256, '\n');  // ignore outputs
+         bPrice = -1;
+      }
+   }
+   while (bPrice <= 0);  // if the price less then 0
+                         // reprompt for price.
+}
+
+/*******************************************************
+ *SALES TAX FUNCTION:
+ * Add 6% taxes on sale
+ *******************************************************/      
+float Product::getSalesTax()
+{  
+   return bPrice * 6 / 100; // Add the taxes 
+}
+
+/********************************************************
+ *SHIPPING COST:
+ *Add 0.10 for very pound if it's over than 5lbs  
+ ********************************************************/
+float Product::getShippingCost()
+{
+   float cost;      // assign a local veraible 
+    
+   if (weight <= 5) // make sure less then 5lbs 
+   {
+      cost = 2;    // the cost is $2 until 5lbs
+   }
+   else 
+   {   // Add $0.10 per pound over 5lbs
+      cost = (weight - 5) * (0.1) + 2;  
+   }
+
+   return cost;  // return cost
+}
+
+/*******************************************************
+ *TOTAL PRICE FUNCTION:
+ *Collect the base price, taxes and shipping
+ *******************************************************/
+float Product::totalPrice()
+{
+   // add pricce, taxes and shipping cost. 
+  return bPrice + getSalesTax() + getShippingCost();
+}
+
+/**********************************************************
+ *DISPLY NAME FUNCTION:
+ *Get name, price and description display..
+ *********************************************************/
+Product::displayName()
+{
+   cout << name << " - " << "$"  << bPrice << endl;
+   cout << "(" << desc << ")" << endl;  
+}
+
+/*********************************************************
+ *DISPLAY PRICE FUNCTION:
+ *Get price, name and weight to display 
+ ********************************************************/
+void Product::displayPrice()
+{
+  
+   cout << "$" << bPrice << " - "
+        << name << " - " << weight << " lbs" << endl;
+}
+
+/*********************************************************
+ *DISPLAY DESCRIPTION:
+ * Get the list to display on the screen.
+ ********************************************************/
+void Product::displayDesc()
+{
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint); // Always show the decimal
+   cout.precision(2);         // Show two digits only.
+
+   // get the list name
+   cout << name << endl;
+   // display the list.
+   cout << "  Price:         $   " << bPrice << endl;
+   cout << "  Sales tax:     $    " << getSalesTax() << endl;
+   cout << "  Shipping cost: $    " << getShippingCost() << endl;
+   cout << "  Total:         $   " << totalPrice() << endl;
+}
+
+/***************************************************************
+ * File: product.h
+ * Author: Makram Ibrahim
+ * Purpose: Contains the definition of the Product class
+ ***************************************************************/
+#ifndef PRODUCT_H
+#define PRODUCT_H
+
+// class definition here
+class Product
+{
+  private:
+   string name;
+   string desc;
+   float  bPrice;
+   float  weight;
+
+  public:
+   int prompt();
+   float getSalesTax();
+   float getShippingCost();
+   float totalPrice();
+   void  displayName();
+   void  displayPrice();
+   void  displayDesc();
+   
+};
+#endif

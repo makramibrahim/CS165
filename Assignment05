@@ -1,0 +1,1218 @@
+
+/**********************************************
+* File: address.cpp
+* Get all the getters and setters here!
+***********************************************/
+#include "address.h"
+
+/***************************************************************
+ *Non-Default:
+ * Accept 4 strings (street, city, state, zip) and set each of the values.
+ ***************************************************************/
+Address :: Address(string st, string cit, string stat, string zipp)
+{
+   street = st;
+   city = cit;
+   state = stat;
+   zip = zipp;
+}
+
+/***********************************************
+ *Prompt Function:
+ * Prompt for each of the four values
+ ***********************************************/
+void Address :: prompt()
+{
+   cout << "Street: ";
+   getline(cin, street); 
+   cout << "City: ";
+   getline(cin, city);
+   cout << "State: ";
+   getline(cin, state);
+   cout << "Zip: ";
+   getline(cin, zip);
+}
+
+/***********************************************
+ * Display Function:
+ * Get  the four values
+ ***********************************************/
+void Address :: display() const 
+{
+   cout << getStreet() << endl;
+   cout << getCity() << ", " << getState()
+        << " " << getZip() << endl;
+}
+
+/***********************************************
+ * Set Street:
+ * Set the street value
+ ***********************************************/
+void Address :: setStreet(string st)
+{
+     street = st;
+}
+
+/***********************************************
+ * Set City
+ * Set the city value
+ **********************************************/
+void Address :: setCity(string cit)
+{
+   city = cit;
+}
+
+/***********************************************
+ * Set State
+ * Set the state value
+ **********************************************/
+void Address :: setState(string stat)
+{
+   state = stat;
+}
+
+/***********************************************
+ * Set zip
+ * Set the zip value
+ **********************************************/
+void Address :: setZip(string zipp)
+{
+   zip = zipp;
+}
+
+
+
+
+/**********************************************
+* File: address.h
+* Contains Address, Customer, Product and Order.
+************************************************/
+#ifndef ADDRESS_H
+#define ADDRESS_H
+#include <iostream>
+using namespace std;
+
+
+class Address
+{
+  // Address class has the following private memebrs
+  private:
+   string street;
+   string city;
+   string state;
+   string zip;
+
+  public: 
+   /*****************
+    * Consturctors
+    *****************/ 
+   Address(): street("unknown"), city(""), state(""), zip("00000"){}
+   Address(string st,
+           string cit,
+           string stat,
+           string zipp);
+  
+   /********************
+    * Getters
+    *********************/
+   string getStreet() const { return street;}
+   string getCity()   const { return city;  }
+   string getState()  const { return state; }
+   string getZip()    const { return zip;   }
+ 
+   /********************
+   *Setters
+   *********************/
+   void setStreet(string st);
+   void setCity(string cit);
+   void setState(string stat);
+   void setZip(string zipp);
+
+   void prompt();
+   void display() const;
+   
+ 
+};
+
+#endif
+
+/**********************************************
+* File: address.h
+* Contains Address, Customer, Product and Order.
+************************************************/
+#ifndef ADDRESS_H
+#define ADDRESS_H
+#include <iostream>
+using namespace std;
+
+// Put your Address class here
+
+class Address
+{
+  private:
+   string street;
+   string city;
+   string state;
+   string zip;
+
+  public: 
+   /*****************
+    * Consturctors
+    *****************/
+  Address(): street("unknown"), city(""), state(""), zip("00000"){}
+   Address(string st,
+           string cit,
+           string stat,
+           string zipp);
+  
+   /********************
+    * Getters
+    *********************/
+   int getStreet() const { return street;}
+   int getCity()   const { return city;  }
+   int getState()  const { return state; }
+   int getZip()    const { return zip;   }
+ 
+   /********************
+   *Setters
+   *********************/
+   void setStreet(string st);
+   void setCity(string cit);
+   void setState(string stat);
+   void setZip(string zipp);
+
+   void prompt();
+   void display() const;
+   
+ 
+};
+
+#endif
+
+/*****************************************************************
+ * File: assign05.cpp
+ * Purpose: This main function will exercise all the classes of
+ *    this project.
+ *
+ * You may comment out certain parts while you are working on the
+ * program, but you should make sure it is all present when you
+ * submit.
+ *****************************************************************/
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+using namespace std;
+
+#include "order.h"
+#include "product.h"
+#include "address.h"
+#include "customer.h"
+
+int main()
+{
+   ///////////////////////////////////////
+   // Address Class
+   ///////////////////////////////////////
+   cout << "*** ADDRESS ***\n";
+   cout << "Default constructor:\n";
+   Address home;
+   home.display();
+   cout << endl;
+
+   cout << "Getters/Setters:\n";
+   home.setStreet("Bag End");
+   home.setCity("The Shire");
+   home.setState("ME");
+   home.setZip("12345");
+
+   cout << "Street: " << home.getStreet() << endl;
+   cout << "City: " << home.getCity() << endl;
+   cout << "State: " << home.getState() << endl;
+   cout << "Zip: " << home.getZip() << endl;
+   cout << endl;
+
+   cout << "Display:\n";
+   home.display();
+   cout << endl;
+
+   cout << "Non-default constructor:\n";
+   Address hotel("The Prancing Pony", "Bree", "BR", "99999");
+
+   hotel.display();
+   cout << endl;
+
+   /////////////////////////////////////////
+   // Customer Class
+   /////////////////////////////////////////
+   cout << "*** CUSTOMER ***\n";
+   cout << "Default constructor:\n";
+   Customer frodo;
+   frodo.display();
+   cout << endl;
+
+   cout << "Getters/Setters\n";
+   frodo.setName("Frodo Baggins");
+   frodo.setAddress(home);
+
+   cout << "Name: " << frodo.getName() << endl;
+   cout << "Address:\n";
+   frodo.getAddress().display();
+   cout << endl;
+
+   cout << "Non-default constructor:\n";
+   Customer gandalf("Gandalf the Grey", hotel);
+   gandalf.display();
+   cout << endl;
+
+   /////////////////////////////////////////////
+   // Product Class
+   /////////////////////////////////////////////
+   cout << "*** PRODUCT ***\n";
+   cout << "Default constructor:\n";
+   Product theRing;
+   theRing.displayAdvertising();
+   cout << endl;
+
+   cout << "Getters/Setters:\n";
+   theRing.setName("Ring of Power");
+   theRing.setDescription("One Ring to bring them all and in the darkness bind them");
+   theRing.setWeight(1);
+   theRing.setBasePrice(999);
+
+   cout.setf(ios::fixed);
+   cout.setf(ios::showpoint);
+   cout.precision(2);
+
+   cout << "Name: " << theRing.getName() << endl;
+   cout << "Description: " << theRing.getDescription() << endl;
+   cout << "Weight: " << theRing.getWeight() << endl;
+   cout << "BasePrice: " << theRing.getBasePrice() << endl;
+   cout << endl;
+
+   cout << "Non-default constructor:\n";
+   Product staff("Wizard Staff", "More than just a walking stick", 100, 10);
+   
+   cout << "\nAdvertising:\n";
+   staff.displayAdvertising();
+   
+   cout << "\nInventory:\n";
+   staff.displayInventory();
+
+   cout << "\nReceipt:\n";
+   staff.displayReceipt();
+   cout << endl;
+
+   ////////////////////////////////////
+   // Order Class
+   ////////////////////////////////////
+   cout << "*** ORDER ***\n";
+   cout << "Default constructor:\n";
+   
+   Order orderRing;
+   cout << orderRing.getCustomer().getName();
+   cout << endl;
+   orderRing.displayReceipt();
+   cout << endl;
+
+   cout << "Getters/Setters:\n";
+   orderRing.setProduct(theRing);
+   orderRing.setQuantity(1);
+   orderRing.setCustomer(frodo);
+
+   cout << "Product:\n";
+   orderRing.getProduct().displayReceipt();
+   cout << "Quantity: " << orderRing.getQuantity() << endl;
+   cout << "Customer:\n";
+   orderRing.getCustomer().display();
+   cout << "Shipping Zip: " << orderRing.getShippingZip() << endl;
+   cout << "TotalPrice: " << orderRing.getTotalPrice() << endl;
+   cout << endl;
+
+   cout << "Non-default constructor:\n";
+   Order orderStaff(staff, 2, gandalf);
+
+   cout << "Display Shipping Label:\n";
+   orderStaff.displayShippingLabel();
+
+   cout << "\nDisplay Receipt:\n";
+   cout << orderStaff.getCustomer().getName();
+   cout << endl;
+   orderStaff.displayReceipt();
+
+   return 0;
+}
+
+
+/**********************************************
+ * File: customer.cpp
+ * Get all the getters and setters here!
+ ***********************************************/
+#include "customer.h"
+#include <iostream>
+using namespace std;
+
+/***************************************************************
+ *Non-Default:
+ * Accept a name and an address object.
+ ***************************************************************/
+Customer :: Customer(string namee, Address addr)
+{
+   name = namee;
+   address = addr;
+}
+
+/***********************************************
+ *Prompt Function:
+ * Prompt for each of the four values
+ ***********************************************/
+void Customer :: prompt()
+{
+   cout << "Name: ";
+   getline(cin, name);
+
+   address.prompt();
+}
+
+/***********************************************
+ * Display Function:
+ * Get name and address.display
+ ***********************************************/
+void Customer :: display() const
+{
+   cout << getName() << endl;
+   address.display();
+}
+
+/***********************************************
+ * Set Name:
+ * Set name value
+ ***********************************************/
+void Customer :: setName(string namee)
+{
+   name = namee;
+}
+
+/***********************************************
+ * Set City
+ * Set the city value
+ **********************************************/
+void Customer :: setAddress(Address addr)
+{
+   address = addr;
+}
+
+
+
+/********************************************************
+ *File: customer.h
+ * Include name and class address
+**********************************************************/
+
+#ifndef CUSTOMER_H
+#define CUSTOMER_H
+#include "address.h"
+
+class Customer
+{
+  private:
+   string name;
+   Address address;
+
+  public:
+   /***********************
+    *Constructors         
+    ***********************/
+   Customer(): name("unspecified"), address() {}
+   Customer(string namee, Address addr);
+
+   /*************************
+    * Getters
+    ************************/
+   string getName()     const  { return name;   }
+   Address getAddress() const  { return address;}
+
+   /**************************
+    *Setters
+    *************************/
+   void setName(string namee);
+   void setAddress(Address addr);
+
+   /**************************
+    *Prompt & Display
+    **************************/
+   void prompt();
+   void display() const;
+};
+
+#endif
+
+###############################################################
+# Program:
+#     Assignment 05, Order Tracking
+#     Brother McCracken, CS165
+# Author:
+#     Makram Ibrahim
+# Summary:
+#     This program is developed to help the user to compute 
+#     shipping weight and total cost in very convenient way.
+###############################################################
+
+# We will learn fancier compilation steps later, but this is
+# good enough for now...
+a.out : product.h product.cpp address.h address.cpp customer.h customer.cpp order.h order.cpp assign05.cpp
+	g++ product.cpp address.cpp customer.cpp order.cpp assign05.cpp
+
+
+###############################################################
+# Program:
+#     Assignment 05, Order Tracking
+#     Brother {Burton, Falin, Ercanbrack}, CS165
+# Author:
+#     your name here
+# Summary:
+#     Put your summary code here... 
+###############################################################
+
+
+# We will learn fancier compilation steps later, but this is
+# good enough for now...
+a.out : product.h product.cpp address.h address.cpp customer.h customer.cpp order.h order.cpp assign05.cpp
+	g++ product.cpp address.cpp customer.cpp order.cpp assign05.cpp
+
+
+/**********************************************
+ * File: Order.cpp
+ * Get all the getters and setters here!
+ ***********************************************/
+#include "order.h"
+//#include "address.h"
+#include <iostream>
+using namespace std;
+
+/***************************************************************
+ *Non-Default:
+ * Accept 3 
+ ***************************************************************/
+Order :: Order(Product prod, int quant, Customer custom)
+{
+   product  = prod;
+   quantity = quant;
+   customer = custom;
+}
+
+/***********************************************
+ *GET THE SHIPPING COST:
+ *Returns the Zip from the customer's address
+ ***********************************************/
+string Order :: getShippingZip() const
+{
+   return customer.getAddress().getZip();
+}
+
+/***********************************************
+ * Set Total Price:
+ * Set the  value
+ ***********************************************/
+float Order :: getTotalPrice() const
+{
+   float totalPrice = product.getTotalPrice() * getQuantity();
+   return totalPrice;
+}
+
+/***********************************************
+ * Set Product
+ * Set the product value
+ **********************************************/
+void Order :: setProduct(Product prod)
+{
+	// make sure to keep this out. 
+   product = prod; 
+}
+
+/***********************************************
+ * Set Quantity
+ * Set the quantity value
+ **********************************************/
+void Order :: setQuantity(int quant)
+{
+   quantity = quant;
+}
+
+/***********************************************
+ * Set Customer
+ * Set the customer value
+ **********************************************/
+void Order :: setCustomer(Customer custom)
+{
+   customer = custom;
+}
+
+/***********************************************
+ * Display Function:
+ * Get  the four values
+ ***********************************************/
+void Order :: displayShippingLabel() const
+{
+   customer.display();
+}
+
+/*********************************************************
+ *DISPLAY DESCRIPTION:
+ * Get the list to display on the screen.
+ ********************************************************/
+void Order :: displayReceipt() const
+{
+	product.displayReceipt();
+}
+
+
+
+
+/**********************************************
+ * File: Order.cpp
+ * Get all the getters and setters here!
+ ***********************************************/
+#include "order.h"
+//#include "address.h"
+#include <iostream>
+using namespace std;
+
+/***************************************************************
+ *Non-Default:
+ * Accept 3 
+ ***************************************************************/
+Order :: Order(Product prod, int quant, Customer custom)
+{
+   product  = prod;
+   quantity = quant;
+   customer = custom;
+}
+
+/***********************************************
+ *GET THE SHIPPING COST:
+ *Returns the Zip from the customer's address
+ ***********************************************/
+string Order :: getShippingZip() const
+{
+   Address ad;
+   string zip = ad.getZip();
+
+   return zip;
+}
+
+/***********************************************
+ * Set Total Price:
+ * Set the  value
+ ***********************************************/
+float Order :: getTotalPrice() const
+{
+   Product t;
+   float totalPrice = t.totalPrice() * getQuantity();
+
+   return totalPrice;
+}
+
+/***********************************************
+ * Set Product
+ * Set the product value
+ **********************************************/
+void Order :: setProduct(Product prod)
+{
+   product = prod;
+}
+
+/***********************************************
+ * Set Quantity
+ * Set the quantity value
+ **********************************************/
+void Order :: setQuantity(int quant)
+{
+   quantity = quant;
+}
+
+/***********************************************
+ * Set Customer
+ * Set the customer value
+ **********************************************/
+void Order :: setCustomer(Customer custom)
+{
+   customer = custom;
+}
+
+/***********************************************
+ * Display Function:
+ * Get  the four values
+ ***********************************************/
+void Order :: displayShippingLabel() const
+{
+   customer.display();
+}
+
+
+
+/***************************************************************
+ * File: order.h
+ * Author: Makram Ibrahim
+ * Purpose: Contains the definition of the Product class
+ ***************************************************************/
+#ifndef ORDER_H
+#define ORDER_H
+
+#include "product.h"
+#include "customer.h"
+
+/**************************************************************
+ *ORDER CLASS
+ * Include proudct, quantity, customer, shippingzip and totalPrice
+ *************************************************************/
+class Order
+{
+  private:
+   Product product;
+   int quantity;
+   Customer customer;
+
+  public:
+   /***********************
+    *Constructors
+    ***********************/
+   Order(): quantity(0), product(), customer(){}
+   Order(Product prod, int quant, Customer custom);
+
+   /*************************
+    * Getters
+    ************************/
+   Product getProduct()           const  { return product;  }
+   int getQuantity()              const  { return quantity; }
+   Customer getCustomer()         const  { return customer; }
+   string getShippingZip()        const;
+   float getTotalPrice()          const;
+   
+   /**************************
+    *Setters
+    *************************/
+   void setProduct(Product prod);
+   void setQuantity(int quant);
+   void setCustomer(Customer custom);
+  
+   /**************************
+    *Prompt & Display
+    *************************/
+   void displayShippingLabel()     const;
+   void displayReceipt()           const;
+
+   
+};
+#endif
+
+/***************************************************************
+ * File: order.h
+ * Author: Makram Ibrahim
+ * Purpose: Contains the definition of the Product class
+ ***************************************************************/
+#ifndef ORDER_H
+#define ORDER_H
+
+#include "product.h"
+#include "customer.h"
+
+/**************************************************************
+ *ORDER CLASS
+ * Include proudct, quantity, customer, shippingzip and totalPrice
+ *************************************************************/
+class Order
+{
+  private:
+   Product product;
+   int quantity;
+   Customer customer;
+
+  public:
+   /***********************
+    *Constructors
+    ***********************/
+   Order(): quantity(0), product(), customer(){}
+   Order(Product prod, int quant, Customer custom);
+
+   /*************************
+    * Getters
+    ************************/
+   Product getProduct()           const  { return product;  }
+   int getQuantity()              const  { return quantity; }
+   Customer getCustomer()         const  { return customer; }
+   string getShippingZip()        const;
+   float getTotalPrice() const;
+   
+   /**************************
+    *Setters
+    *************************/
+   void setProduct(Product prod);
+   void setQuantity(int quant);
+   void setCustomer(Customer custom);
+  
+   /**************************
+    *Prompt & Display
+    *************************/
+   void displayShippingLable() const;
+   
+};
+#endif
+
+/***************************************************************
+ * File: product.cpp
+ * Author: Makram Ibraim
+ * Purpose: Contains the method implementations for the Product class.
+ ***************************************************************/
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+#include "product.h"
+
+/***************************************************************
+ * Non-Default:
+ * Accepts all four of these values
+ * (name, description, basePrice, weight) and sets them.
+ ***************************************************************/
+Product :: Product(string namee, string descr, float bPric, float weigh)
+{
+   name   = namee;
+   desc   = descr;
+   bPrice = bPric;
+   weight = weigh;
+}
+
+/****************************************************
+ * PROMPT FUNCTION:
+ * Ask the user for input
+ ***************************************************/
+int Product::prompt()
+{
+   cout << "Enter name: ";
+   getline(cin, name);    // get a complete line here
+
+   cout << "Enter description: ";
+   getline(cin, desc);    // get another compelte line here 
+
+   cout << "Enter weight: ";
+   cin  >> weight;
+
+ 
+   do // do will continue repompt the user
+   {
+      cout << "Enter price: ";
+      cin  >> bPrice;
+      if (cin.fail())    // if input letter reprompt 
+      {
+         cin.clear();             // clear the error
+         cin.ignore(256, '\n');  // ignore outputs
+         bPrice = -1;
+      }
+   }
+   while (bPrice <= 0);  // if the price less then 0
+                         // reprompt for price.
+}
+
+/*******************************************************
+ * SALES TAX FUNCTION:
+ * Add 6% taxes on sale
+ *******************************************************/
+float Product::getSalesTax() const
+{  
+   return bPrice * 6 / 100; // Add the taxes 
+}
+
+/********************************************************
+ * SHIPPING COST:
+ * Add 0.10 for very pound if it's over than 5lbs  
+ ********************************************************/
+float Product::getShippingCost() const
+{
+   float cost;      // assign a local veraible 
+    
+   if (weight <= 5) // make sure less then 5lbs 
+   {
+      cost = 2;    // the cost is $2 until 5lbs
+   }
+   else 
+   {   // Add $0.10 per pound over 5lbs
+      cost = (weight - 5) * (0.1) + 2;  
+   }
+
+   return cost;  // return cost
+}
+
+/*******************************************************
+ * TOTAL PRICE FUNCTION:
+ * Collect the base price, taxes and shipping
+ *******************************************************/
+float Product::getTotalPrice() const
+{
+   // add pricce, taxes and shipping cost. 
+  return bPrice + getSalesTax() + getShippingCost();
+}
+
+/*******************************************************
+ * NAME FUNCTION:
+ * Set name value 
+ *******************************************************/
+void Product :: setName(string namee) 
+{
+   name = namee;
+}
+
+/*******************************************************
+ * DESCRIPTION FUNCTION:
+ * Set description value 
+ *******************************************************/
+void Product :: setDescription(string descr)
+{
+   desc = descr;
+}
+
+/*******************************************************
+ * BASE PRICE FUNCTION:
+ * Set base price value
+ *******************************************************/
+void Product :: setBasePrice(float bPric)
+{ 
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint); // Always show the decimal
+   cout.precision(2);
+
+   bPrice = bPric;
+
+}
+
+/*******************************************************
+ * WEIGHT FUNCTION:
+ * Set weight value
+ *******************************************************/
+void Product :: setWeight(float weigh)
+{
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint); // Always show the decimal
+   cout.precision(1);         // Show two digits only.
+   weight = weigh;
+}
+
+/**********************************************************
+ *DISPLY NAME FUNCTION:
+ *Get name, price and description display..
+ *********************************************************/
+void Product::displayAdvertising() const
+{
+   // Always show the decimal
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint);
+   cout.precision(2);
+
+
+   cout << name << " - " << "$"  << bPrice << endl;
+   cout << "(" << desc << ")" << endl;  
+}
+
+/*********************************************************
+ *DISPLAY PRICE FUNCTION:
+ *Get price, name and weight to display 
+ ********************************************************/
+void  Product::displayInventory() const
+{
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint);
+   
+   if (bPrice)
+   {
+      cout.precision(2);
+       cout << "$" << bPrice << " - ";
+       
+   }
+
+   if (weight)
+   {
+      cout.precision(1);
+     
+     cout << name << " - " << weight << " lbs" << endl;
+
+   }  
+  
+}
+
+/*********************************************************
+ *DISPLAY DESCRIPTION:
+ * Get the list to display on the screen.
+ ********************************************************/
+void Product::displayReceipt() const
+{
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint);
+   cout.precision(2);
+   // get the list name
+   cout << name << endl;
+   // display the list.
+   cout << "  Price:         $"  << setw(8) << bPrice << endl;
+   cout << "  Sales tax:     $"  << setw(8) << getSalesTax() << endl;
+   cout << "  Shipping cost: $"  << setw(8) << getShippingCost() << endl;
+   cout << "  Total:         $"  << setw(8) << getTotalPrice() << endl;
+}
+
+/***************************************************************
+ * File: product.cpp
+ * Author: Makram Ibraim
+ * Purpose: Contains the method implementations for the Product class.
+ ***************************************************************/
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+#include "product.h"
+
+/***************************************************************
+ *Non-Default:
+ * Accepts all four of these values
+ * (name, description, basePrice, weight) and sets them.
+ ***************************************************************/
+Product :: Product(string namee, string descr, float bPric, float weigh)
+{
+   name   = namee;
+   desc   = descr;
+   bPrice = bPric;
+   weight = weigh;
+}
+
+/****************************************************
+ *PROMPT FUNCTION:
+ * Ask the user for input
+ ***************************************************/
+int Product::prompt()
+{
+   cout << "Enter name: ";
+   getline(cin, name);    // get a complete line here
+
+   cout << "Enter description: ";
+   getline(cin, desc);    // get another compelte line here 
+
+   cout << "Enter weight: ";
+   cin  >> weight;
+
+ 
+   do // do will continue repompt the user
+   {
+      cout << "Enter price: ";
+      cin  >> bPrice;
+      if (cin.fail())    // if input letter reprompt 
+      {
+         cin.clear();             // clear the error
+         cin.ignore(256, '\n');  // ignore outputs
+         bPrice = -1;
+      }
+   }
+   while (bPrice <= 0);  // if the price less then 0
+                         // reprompt for price.
+}
+
+/*******************************************************
+ *SALES TAX FUNCTION:
+ * Add 6% taxes on sale
+ *******************************************************/
+float Product::getSalesTax()
+{  
+   return bPrice * 6 / 100; // Add the taxes 
+}
+
+/********************************************************
+ *SHIPPING COST:
+ *Add 0.10 for very pound if it's over than 5lbs  
+ ********************************************************/
+float Product::getShippingCost()
+{
+   float cost;      // assign a local veraible 
+    
+   if (weight <= 5) // make sure less then 5lbs 
+   {
+      cost = 2;    // the cost is $2 until 5lbs
+   }
+   else 
+   {   // Add $0.10 per pound over 5lbs
+      cost = (weight - 5) * (0.1) + 2;  
+   }
+
+   return cost;  // return cost
+}
+
+/*******************************************************
+ *TOTAL PRICE FUNCTION:
+ *Collect the base price, taxes and shipping
+ *******************************************************/
+float Product::getTotalPrice()
+{
+   // add pricce, taxes and shipping cost. 
+  return bPrice + getSalesTax() + getShippingCost();
+}
+
+/**********************************************************
+ *DISPLY NAME FUNCTION:
+ *Get name, price and description display..
+ *********************************************************/
+void Product::displayName()
+{
+   cout << name << " - " << "$"  << bPrice << endl;
+   cout << "(" << desc << ")" << endl;  
+}
+
+/*********************************************************
+ *DISPLAY PRICE FUNCTION:
+ *Get price, name and weight to display 
+ ********************************************************/
+void  Product::displayBasePrice()
+{
+  
+   cout << "$" << bPrice << " - "
+        << name << " - " << weight << " lbs" << endl;
+}
+
+/*********************************************************
+ *DISPLAY DESCRIPTION:
+ * Get the list to display on the screen.
+ ********************************************************/
+void Product::displayDescription()
+{
+   cout.setf(ios::fixed);      // No scientific notation  
+   cout.setf(ios::showpoint); // Always show the decimal
+   cout.precision(2);         // Show two digits only.
+
+   // get the list name
+   cout << name << endl;
+   // display the list.
+   cout << "  Price:         $   " << getSalesTax() << endl;
+   cout << "  Sales tax:     $    " << getSalesTax() << endl;
+   cout << "  Shipping cost: $    " << getShippingCost() << endl;
+   cout << "  Total:         $   " << getTotalPrice() << endl;
+}
+
+/***************************************************************
+ * File: product.h
+ * Author: Makram Ibrahim
+ * Purpose: Contains the definition of the Product class
+ ***************************************************************/
+#ifndef PRODUCT_H
+#define PRODUCT_H
+#include "customer.h"
+
+/***********************************************************
+ *PRODUCT CLASS:
+ *Add name, description, base Price and weight
+ ***********************************************************/
+class Product
+{
+  // Create a class for the private data members
+  private:
+   string name;
+   string desc;
+   float  bPrice;
+   float  weight;
+
+  public:
+   /***********************
+    *Constructors
+    ***********************/
+   Product(): name("none"), desc(""), bPrice(0), weight(0){}
+   Product(string namee,
+           string descr,
+           float bPric,
+           float weigh);
+
+   /*************************
+    * Getters
+    ************************/
+   string getName()         const  { return name;   }
+   string getDescription()  const  { return desc;   }
+   float getBasePrice()     const  { return bPrice; }
+   float getWeight()        const  { return weight; }
+
+   /**************************
+    *Setters
+    *************************/
+   void setName(string namee);
+   void setDescription(string descr);
+   void setBasePrice(float bPric);
+   void setWeight(float weigh);
+
+   /**************************
+    *Prompt & Display
+    *************************/
+   int prompt();
+   float getSalesTax()       const;
+   float getShippingCost()   const;
+   float getTotalPrice()     const;
+   void displayAdvertising() const;
+   void displayInventory()   const;
+   void displayReceipt()     const;
+   
+};
+
+#endif
+
+/***************************************************************
+ * File: product.h
+ * Author: Makram Ibrahim
+ * Purpose: Contains the definition of the Product class
+ ***************************************************************/
+#ifndef PRODUCT_H
+#define PRODUCT_H
+#include "customer.h"
+
+/***********************************************************
+ *PRODUCT CLASS:
+ *Add name, description, base Price and weight
+ ***********************************************************/
+class Product
+{
+  private:
+   string name;
+   string desc;
+   float  bPrice;
+   float  weight;
+
+  public:
+   /***********************
+    *Constructors
+    ***********************/
+   Product(): name("none"), desc(""), bPrice(0), weight(0){}
+   Product(string namee,
+           string descr,
+           float bPric,
+           float weigh);
+
+   /*************************
+    * Getters
+    ************************/
+   string getName()  const  { return name;   } 
+   string getDescription()  const  { return desc;   }
+   float getBasePrice() const  { return bPrice; }
+   float getWeight() const  { return weight; }
+
+   /**************************
+    *Setters
+    *************************/
+   void setName(string namee);
+   void setDescription(string descr);
+   void setBasePrice(float bPric);
+   void setWeight(float weigh);
+
+   /**************************
+    *Prompt & Display
+    *************************/
+   int prompt();
+   float getSalesTax();
+   float getShippingCost();
+   float totalPrice();
+   void  displayName();
+   void  displayPrice();
+   void  displayDesc();   
+};
+
+#endif

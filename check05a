@@ -1,0 +1,322 @@
+###############################################################
+# Program:
+#     Checkpoint 05a, Getters and Setters
+#     Brother McCracken, CS165
+# Author:
+#     Makram Ibrahim
+# Summary:
+#     Summaries are not necessary for checkpoint assignments.
+###############################################################
+
+# We will learn fancier compilation steps later, but this is
+# good enough for now...
+a.out : money.h money.cpp check05a.cpp
+	g++ money.cpp check05a.cpp
+
+
+
+/*********************
+ * File: check05a.cpp
+ *********************/
+
+// You should not change anything in this file 
+
+
+#include <iostream>
+using namespace std;
+
+#include "money.h"
+
+/****************************************************************
+ * Function: main
+ * Purpose: Test the money class
+ ****************************************************************/
+int main()
+{
+   Money money;
+
+   money.prompt();
+   money.display();
+
+   cout << endl;
+
+   cout << "That is " << money.getDollars() << " dollars and "
+        << money.getCents() << " cents!\n";
+
+   return 0;
+}
+
+
+
+###############################################################
+# Program:
+#     Checkpoint 05a, Getters and Setters
+#     Brother McCracken, CS165
+# Author:
+#     Makram Ibrahim
+# Summary:
+#     Summaries are not necessary for checkpoint assignments.
+###############################################################
+
+
+# We will learn fancier compilation steps later, but this is
+# good enough for now...
+a.out : money.h money.cpp check05a.cpp
+	g++ money.cpp check05a.cpp
+
+
+###############################################################
+# Program:
+#     Checkpoint 05a, Getters and Setters
+#     Brother {Burton, Falin, Ercanbrack}, CS165
+# Author:
+#     your name here
+# Summary:
+#     Summaries are not necessary for checkpoint assignments.
+###############################################################
+
+
+# We will learn fancier compilation steps later, but this is
+# good enough for now...
+a.out : money.h money.cpp check05a.cpp
+	g++ money.cpp check05a.cpp
+
+
+/***********************
+ * File: money.cpp
+ ***********************/
+
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+
+#include "money.h"
+
+/*****************************************************************
+ * Function: prompt
+ * Purpose: Asks the user for values for dollars and cents
+ *   and stores them.
+ ****************************************************************/
+void Money :: prompt()
+{
+   int dollars;
+   int cents;
+
+   cout << "Dollars: ";
+   cin >> dollars;
+
+   cout << "Cents: ";
+   cin >> cents;
+
+   setDollars(dollars);
+   setCents(cents);
+}
+
+/*****************************************************************
+ * Function: getDollar
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+int Money :: getDollars() const
+{
+   return dollars;
+}
+
+
+/*****************************************************************
+ * Function: getCents
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+int Money :: getCents() const
+{
+   return cents;
+}
+
+
+/*****************************************************************
+ * Function: setDollars
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+void Money :: setDollars(int dollar)
+{
+   if (dollar < 0)
+   {
+      this->dollars = abs(dollar);
+   }
+   else
+   {
+      this->dollars = dollar;
+   }
+}
+
+
+/*****************************************************************
+ * Function: setCents 
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+void Money :: setCents(int cent)
+{
+   if (cent < 0)
+   {
+      this->cents = abs(cent);
+   }
+   else
+   {
+      this->cents = cent;
+   }
+   
+}
+
+/*****************************************************************
+ * Function: display
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+void Money :: display() const 
+{
+   cout << "$" << getDollars() << ".";
+   cout << setfill('0') << setw(2) << getCents();
+}
+
+/***********************
+ * File: money.cpp
+ ***********************/
+
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+
+#include "money.h"
+
+/*****************************************************************
+ * Function: prompt
+ * Purpose: Asks the user for values for dollars and cents
+ *   and stores them.
+ ****************************************************************/
+void Money :: prompt()
+{
+   int dollars;
+   int cents;
+
+   cout << "Dollars: ";
+   cin >> dollars;
+
+   cout << "Cents: ";
+   cin >> cents;
+
+   setDollars(dollars);
+   setCents(cents);
+}
+
+/*****************************************************************
+ * Function: getDollar
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+int Money :: getDollars() const
+{
+   return dollars;
+}
+
+
+/*****************************************************************
+ * Function: getCents
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+int Money :: getCents() const
+{
+   return cents;
+}
+
+
+/*****************************************************************
+ * Function: setDollars
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+void Money :: setDollars(int dollar)
+{
+   if (dollar < 0)
+   {
+      this->dollars = abs(dollars);
+   }
+   else
+   {
+      this->dollars = dollar;
+   }
+}
+
+
+/*****************************************************************
+ * Function: setCents 
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+void Money :: setCents(int cent)
+{
+   if (cent < 0)
+   {
+      this->cents = abs(cents);
+   }
+   else
+   {
+      this->cents = cent;
+   }
+   
+}
+
+/*****************************************************************
+ * Function: display
+ * Purpose: Displays the value of the money object.
+ ****************************************************************/
+void Money :: display() const 
+{
+   cout << "$" << getDollars() << ".";
+   cout << setfill('0') << setw(2) << getCents();
+}
+
+/******************
+ * File: money.h
+ ******************/
+#ifndef MONEY_H
+#define MONEY_H
+
+class Money
+{
+private:
+   int dollars;
+   int cents;
+
+public:
+   void  prompt();
+   
+   int   getDollars()  const;
+   int   getCents()    const;
+   
+   void  setDollars(int dollar);
+   void  setCents(int cent);
+   
+   void  display() const;
+};
+
+#endif
+
+/******************
+ * File: money.h
+ ******************/
+#ifndef MONEY_H
+#define MONEY_H
+
+class Money
+{
+private:
+   int dollars;
+   int cents;
+
+public:
+   void  prompt();
+   int   getDollars() const;
+   int   getCents() const;
+   void  setDollars(int dollar);
+   void  setCents(int cent);
+   void  display() const;
+};
+
+#endif

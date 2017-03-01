@@ -1,0 +1,122 @@
+
+/*********************************************************************
+ * File: check04b.cpp
+ * Purpose: contains the main method to exercise the Date class.
+ *********************************************************************/
+//#include <iostream>
+//using namespace std;
+#include "date.h"
+
+int main()
+{  
+   // create a Date object
+   Date get;
+
+    get.set();
+   
+   // call each display function
+   get.displayAmerican();
+   get.displayEuropean();
+   get.displayISO();
+
+   return 0;
+}
+
+
+/********************************************************************
+ * File: date.cpp
+ * Purpose: Holds the implementation of the Date class methods.
+ ********************************************************************/
+#include <iostream>
+using namespace std;
+
+#include "date.h"
+
+// Put your method bodies here...
+int Date::set()
+{
+   cout << "Month: ";
+   cin >> month;
+
+   cout << "Day: ";
+   cin >> day;
+
+   cout << "Year: ";
+   cin >> year;
+
+   cout << endl;
+}
+
+void Date::displayAmerican()
+{
+   cout << month << "/"
+        << day   << "/"
+        << year  << endl;
+}
+
+void Date::displayEuropean()
+{
+   cout << day   << "/"
+        << month << "/"
+        << year  << endl;
+}
+
+void Date::displayISO()
+{
+   cout << year  << "-"
+        << month << "-"
+        << day   << endl;
+}
+
+/********************************************************************
+ * File: date.h
+ * Purpose: Holds the definition of the Date class.
+ ********************************************************************/
+
+#ifndef DATE_H
+#define DATE_H
+
+// put your class definition here
+class Date
+{
+  private:
+   int month;
+   int day;
+   int year;
+
+// along with the data members, and method prototypes
+  public:
+   int set();
+   void displayAmerican();
+   void displayEuropean();
+   void displayISO();
+
+};
+
+#endif
+
+###############################################################
+# Program:
+#     Checkpoint 04b, More Classes
+#     Brother McCracken, CS165
+# Author:
+#     Makram Ibrahim
+# Summary:
+#     Put your summary code here...
+#################################################################
+
+a.out : date.h date.cpp check04b.cpp
+	g++ date.cpp check04b.cpp
+
+
+###############################################################
+# Program:
+#    Checkpoint 04b,
+#    Brother Mccracken, Cs165
+# Author:
+#    Makram Ibrahim
+##############################################################
+
+a.out : date.h date.cpp check04b.cpp
+	g++ date.cpp check04b.cpp
+
